@@ -1,0 +1,19 @@
+{
+  "receipt_id": "QPR-EXAMPLE-001",
+  "device_id": "SILICON-SPIN-UNITCELL-PLACEHOLDER-001",
+  "platform": "silicon spin qubit",
+  "device_type": "300-mm foundry quantum-dot unit cell",
+  "manufacturing_context": {
+    "wafer_size_mm": 300,
+    "fabrication_mode": "industrial semiconductor tooling"
+  },
+  "test_context": {
+    "temperature_k": 1.6,
+    "measurement_method": "cryogenic wafer probing"
+  },
+  "metrics": {
+    "two_qubit_fidelity": ">99% class evidence anchor",
+    "spam_fidelity": "up to 99.9% in related evidence summary"
+  },
+  "evidence_links": ["AQLEN-EA-001", "AQLEN-EA-002"]
+}
