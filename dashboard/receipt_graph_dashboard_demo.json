@@ -1,0 +1,190 @@
+{
+  "boundary_cards": [
+    {
+      "boundary": "Supports manufacturability research direction; does not prove fault-tolerant deployment.",
+      "label": "Silicon spin-qubit foundry evidence lane",
+      "node_id": "ev-silicon-spin-foundry"
+    },
+    {
+      "boundary": "Readiness score is an internal assessment metric, not a guarantee of quantum advantage.",
+      "label": "Sample QEC readiness score",
+      "node_id": "score-demo-001"
+    }
+  ],
+  "dashboard_payload_version": "v0.1",
+  "edges": [
+    {
+      "id": "ev-silicon-spin-foundry->qbit-demo-001:supports",
+      "label": "supports",
+      "note": "Evidence lane motivates provenance tracking for silicon spin-qubit devices.",
+      "source": "ev-silicon-spin-foundry",
+      "target": "qbit-demo-001",
+      "type": "supports",
+      "weight": 0.8
+    },
+    {
+      "id": "noise-demo-001->qbit-demo-001:measured_on",
+      "label": "measured on",
+      "note": "Noise event is attached to a specific qubit receipt.",
+      "source": "noise-demo-001",
+      "target": "qbit-demo-001",
+      "type": "measured_on",
+      "weight": null
+    },
+    {
+      "id": "cal-demo-001->noise-demo-001:mitigated_by",
+      "label": "mitigated by",
+      "note": "Calibration receipt records the response to the observed noise event.",
+      "source": "cal-demo-001",
+      "target": "noise-demo-001",
+      "type": "mitigated_by",
+      "weight": null
+    },
+    {
+      "id": "score-demo-001->qbit-demo-001:derived_from",
+      "label": "derived from",
+      "note": "Readiness score is derived from the device receipt and related event history.",
+      "source": "score-demo-001",
+      "target": "qbit-demo-001",
+      "type": "derived_from",
+      "weight": null
+    },
+    {
+      "id": "noise-demo-001->module-temporal-error-memory:feeds_module",
+      "label": "feeds module",
+      "note": "Noise events feed temporal error memory.",
+      "source": "noise-demo-001",
+      "target": "module-temporal-error-memory",
+      "type": "feeds_module",
+      "weight": null
+    },
+    {
+      "id": "cal-demo-001->module-predictive-calibration:feeds_module",
+      "label": "feeds module",
+      "note": "Calibration receipts feed predictive calibration learning.",
+      "source": "cal-demo-001",
+      "target": "module-predictive-calibration",
+      "type": "feeds_module",
+      "weight": null
+    },
+    {
+      "id": "cal-demo-001->score-demo-001:updates",
+      "label": "updates",
+      "note": "Calibration outcome updates readiness assessment inputs.",
+      "source": "cal-demo-001",
+      "target": "score-demo-001",
+      "type": "updates",
+      "weight": null
+    }
+  ],
+  "focus_trace": {
+    "downstream": [
+      {
+        "depth": 1,
+        "node_id": "qbit-demo-001",
+        "via_edge_id": "score-demo-001->qbit-demo-001:derived_from"
+      }
+    ],
+    "focus_id": "score-demo-001",
+    "upstream": [
+      {
+        "depth": 1,
+        "node_id": "cal-demo-001",
+        "via_edge_id": "cal-demo-001->score-demo-001:updates"
+      }
+    ]
+  },
+  "global_claim_boundary": "AQLEN is a research and intelligence architecture for tracking evidence, errors, calibration, and readiness. It is not a claim that practical fault-tolerant quantum computing has been solved.",
+  "graph_id": "aqlen-receipt-graph-demo-001",
+  "graph_version": "v0.1",
+  "nodes": [
+    {
+      "badge": "Evidence",
+      "claim_boundary": "Supports manufacturability research direction; does not prove fault-tolerant deployment.",
+      "group": "evidence",
+      "id": "ev-silicon-spin-foundry",
+      "label": "Silicon spin-qubit foundry evidence lane",
+      "status": "research_anchor",
+      "type": "evidence_anchor",
+      "warnings": [
+        "Supports manufacturability research direction; does not prove fault-tolerant deployment."
+      ]
+    },
+    {
+      "badge": "Qubit",
+      "claim_boundary": null,
+      "group": "device",
+      "id": "qbit-demo-001",
+      "label": "Demo silicon spin qubit receipt",
+      "status": "sample",
+      "type": "qubit_receipt",
+      "warnings": []
+    },
+    {
+      "badge": "Noise",
+      "claim_boundary": null,
+      "group": "error",
+      "id": "noise-demo-001",
+      "label": "Sample drift and noise event",
+      "status": "sample",
+      "type": "noise_event",
+      "warnings": []
+    },
+    {
+      "badge": "Calibration",
+      "claim_boundary": null,
+      "group": "calibration",
+      "id": "cal-demo-001",
+      "label": "Sample calibration response",
+      "status": "sample",
+      "type": "calibration_receipt",
+      "warnings": []
+    },
+    {
+      "badge": "Readiness",
+      "claim_boundary": "Readiness score is an internal assessment metric, not a guarantee of quantum advantage.",
+      "group": "score",
+      "id": "score-demo-001",
+      "label": "Sample QEC readiness score",
+      "status": "sample",
+      "type": "readiness_score",
+      "warnings": [
+        "Readiness score is an internal assessment metric, not a guarantee of quantum advantage."
+      ]
+    },
+    {
+      "badge": "Module",
+      "claim_boundary": null,
+      "group": "architecture",
+      "id": "module-temporal-error-memory",
+      "label": "Temporal Error Memory",
+      "status": "v0.2_module",
+      "type": "module",
+      "warnings": []
+    },
+    {
+      "badge": "Module",
+      "claim_boundary": null,
+      "group": "architecture",
+      "id": "module-predictive-calibration",
+      "label": "Predictive Calibration Engine",
+      "status": "v0.2_module",
+      "type": "module",
+      "warnings": []
+    }
+  ],
+  "summary": "Minimal AQLEN graph linking evidence, provenance, noise, calibration, and readiness scoring.",
+  "summary_cards": {
+    "boundary_node_count": 2,
+    "edge_count": 7,
+    "node_count": 7,
+    "node_types": {
+      "calibration_receipt": 1,
+      "evidence_anchor": 1,
+      "module": 2,
+      "noise_event": 1,
+      "qubit_receipt": 1,
+      "readiness_score": 1
+    }
+  }
+}
