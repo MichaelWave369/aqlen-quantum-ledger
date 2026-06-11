@@ -1,0 +1,24 @@
+[
+  {
+    "anchor_id": "AQLEN-EA-005",
+    "title": "Silicon spin-qubit three-qubit phase-correcting code demonstration",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2022,
+    "url": "https://www.nature.com/articles/s41586-022-04986-6",
+    "platform": "silicon spin qubits; three-qubit phase correcting code",
+    "claims": ["Small-scale silicon spin-qubit correction was demonstrated."],
+    "claim_boundary": "Small-scale correction demonstration; not full-scale fault tolerance.",
+    "confidence": "very_high"
+  },
+  {
+    "anchor_id": "AQLEN-EA-007",
+    "title": "An 11-qubit atom processor in silicon",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2025,
+    "url": "https://www.nature.com/articles/s41586-025-09827-w",
+    "platform": "phosphorus atom processor in silicon",
+    "claims": ["An 11-qubit silicon atom-processor lane supports donor-system evidence tracking."],
+    "claim_boundary": "Keep donor/atom-processor evidence separate from foundry quantum-dot evidence.",
+    "confidence": "very_high"
+  }
+]
