@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://parallax.local/schemas/aqlen/noise_origin_event.schema.json",
+  "title": "Noise Origin Event",
+  "type": "object",
+  "required": ["event_id", "device_id", "noise_class", "evidence_basis", "confidence", "mitigation_route"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "device_id": {"type": "string"},
+    "noise_class": {
+      "enum": [
+        "nuclear_spin_noise",
+        "charge_noise",
+        "electrical_control_noise",
+        "thermal_noise",
+        "pulse_sequence_context_noise",
+        "crosstalk",
+        "readout_error",
+        "fabrication_variability",
+        "interface_roughness",
+        "wiring_or_control_adjacency_noise",
+        "unknown_unresolved"
+      ]
+    },
+    "observed_symptom": {"type": "string"},
+    "evidence_basis": {"type": "string"},
+    "confidence": {"enum": ["low", "medium", "high"]},
+    "mitigation_route": {"type": "string"},
+    "linked_calibration_receipts": {"type": "array", "items": {"type": "string"}}
+  }
+}
