@@ -1,0 +1,12 @@
+{
+  "dashboard_renderer_v0_1": {
+    "serve_repo_root": "python -m http.server 8000",
+    "open_renderer": "http://localhost:8000/dashboard/receipt_graph_renderer.html",
+    "regenerate_dashboard_export": "python tools/receipt_graph_dashboard_export.py export --graph examples/receipt_graph_minimal.json --focus score-demo-001 --depth 6 --out dashboard/receipt_graph_dashboard_demo.json",
+    "notes": [
+      "The renderer tries to load dashboard/receipt_graph_dashboard_demo.json when served from the repository root.",
+      "If browser file-fetch rules block local loading, serve the repo with python -m http.server or paste/upload the JSON export.",
+      "The renderer is local-only and does not send graph data to any external service."
+    ]
+  }
+}
