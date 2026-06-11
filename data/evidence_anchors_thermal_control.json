@@ -1,0 +1,24 @@
+[
+  {
+    "anchor_id": "AQLEN-EA-004",
+    "title": "High-fidelity spin qubit operation and algorithmic initialization above 1 K",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2024,
+    "url": "https://www.nature.com/articles/s41586-024-07160-2",
+    "platform": "silicon spin qubits above 1 K",
+    "claims": ["Above-1K operation supports thermal and infrastructure analysis."],
+    "claim_boundary": "Higher temperature operation helps infrastructure design; it does not remove cryogenic requirements.",
+    "confidence": "very_high"
+  },
+  {
+    "anchor_id": "AQLEN-EA-006",
+    "title": "Spin-qubit control with a milli-kelvin CMOS chip",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2025,
+    "url": "https://www.nature.com/articles/s41586-025-09157-x",
+    "platform": "MOS-style silicon spin qubits; cryo-CMOS control",
+    "claims": ["Cryo-CMOS control integration helps address wiring and control adjacency."],
+    "claim_boundary": "Control integration is promising; heat and noise adjacency still need tracking.",
+    "confidence": "very_high"
+  }
+]
