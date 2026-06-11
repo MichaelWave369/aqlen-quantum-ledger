@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://parallax.local/schemas/aqlen/calibration_drift_receipt.schema.json",
+  "title": "Calibration Drift Receipt",
+  "type": "object",
+  "required": ["receipt_id", "device_id", "before_state", "calibration_action", "after_state", "fidelity_delta", "residual_risk"],
+  "properties": {
+    "receipt_id": {"type": "string"},
+    "device_id": {"type": "string"},
+    "timestamp": {"type": "string"},
+    "before_state": {"type": "object"},
+    "calibration_action": {
+      "type": "object",
+      "properties": {
+        "action_type": {"type": "string"},
+        "parameters_changed": {"type": "array", "items": {"type": "string"}},
+        "operator_or_agent": {"type": "string"}
+      }
+    },
+    "after_state": {"type": "object"},
+    "fidelity_delta": {"type": "number"},
+    "residual_risk": {"type": "string"},
+    "reversible": {"type": "boolean"}
+  }
+}
