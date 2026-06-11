@@ -1,0 +1,24 @@
+{
+  "commands": [
+    {
+      "name": "validate-canonical-dashboard-payload",
+      "command": "python tools/validate_dashboard_payload.py dashboard/receipt_graph_dashboard_demo.json",
+      "purpose": "Checks the canonical dashboard export for missing nodes, broken edges, missing boundaries, and trace drift."
+    },
+    {
+      "name": "validate-canonical-dashboard-payload-json",
+      "command": "python tools/validate_dashboard_payload.py dashboard/receipt_graph_dashboard_demo.json --json",
+      "purpose": "Emits machine-readable validation output for CI or later dashboard diagnostics."
+    },
+    {
+      "name": "serve-local-dashboard",
+      "command": "python -m http.server 8000",
+      "purpose": "Serves the local-first dashboard renderer and fixtures."
+    },
+    {
+      "name": "open-v0-4-renderer",
+      "command": "http://localhost:8000/dashboard/receipt_graph_renderer_v0_4.html",
+      "purpose": "Manual browser smoke check for the graph renderer detail/evidence view."
+    }
+  ]
+}
