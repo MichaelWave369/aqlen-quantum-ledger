@@ -1,0 +1,31 @@
+{
+  "dashboard_payload_version": "0.5-negative",
+  "graph_id": "aqlen.negative.boundary_missing_node",
+  "graph_version": "0.1",
+  "global_claim_boundary": "Negative fixture: this payload is intentionally invalid and should fail validation.",
+  "nodes": [
+    {
+      "id": "score-demo-001",
+      "type": "readiness_score",
+      "label": "Demo readiness score",
+      "group": "score",
+      "status": "demo"
+    }
+  ],
+  "edges": [],
+  "summary_cards": {
+    "node_count": 1,
+    "edge_count": 0
+  },
+  "boundary_cards": [
+    {
+      "node_id": "missing-boundary-node",
+      "boundary": "Boundary card points at a node that does not exist."
+    }
+  ],
+  "focus_trace": {
+    "focus_id": "score-demo-001",
+    "upstream": [],
+    "downstream": []
+  }
+}
