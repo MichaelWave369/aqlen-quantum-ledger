@@ -1,0 +1,31 @@
+{
+  "version": "v0.3",
+  "description": "Local commands for using the AQLEN visual graph layout renderer.",
+  "commands": [
+    {
+      "name": "serve_repo_root",
+      "command": "python -m http.server 8000",
+      "notes": "Run from the repository root so dashboard/receipt_graph_renderer.html can fetch dashboard/receipt_graph_dashboard_demo.json."
+    },
+    {
+      "name": "open_renderer",
+      "command": "http://localhost:8000/dashboard/receipt_graph_renderer.html",
+      "notes": "Open in a browser, then choose Load demo export."
+    },
+    {
+      "name": "export_dashboard_payload",
+      "command": "python tools/receipt_graph_dashboard_export.py export --graph examples/receipt_graph_minimal.json --focus score-demo-001 --depth 6 --out dashboard/receipt_graph_dashboard_demo.json",
+      "notes": "Regenerates the demo dashboard payload before opening the renderer."
+    },
+    {
+      "name": "graph_layout_modes",
+      "command": "Use the Layout dropdown: Pipeline lanes or Radial trace.",
+      "notes": "Pipeline is best for the whole receipt chain. Radial is best for one focused node."
+    },
+    {
+      "name": "trace_only_mode",
+      "command": "Toggle Trace only in the renderer.",
+      "notes": "Hides non-trace nodes and edges for focused review."
+    }
+  ]
+}
