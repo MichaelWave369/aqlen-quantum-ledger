@@ -1,0 +1,10 @@
+{
+  "fixture_name": "noise_focus_demo",
+  "fixture_purpose": "Validate noise/error focus mode and downstream calibration/readiness trace behavior.",
+  "expected_focus_id": "noise-demo-001",
+  "expected_visible_boundaries": [
+    "global_claim_boundary"
+  ],
+  "source_payload": "dashboard/receipt_graph_dashboard_demo.json",
+  "local_url": "http://localhost:8000/dashboard/receipt_graph_renderer_v0_4.html"
+}
