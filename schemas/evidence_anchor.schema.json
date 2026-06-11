@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://parallax.local/schemas/aqlen/evidence_anchor.schema.json",
+  "title": "AQLEN Evidence Anchor",
+  "type": "object",
+  "required": ["anchor_id", "title", "source_type", "publication_year", "platform", "claims", "claim_boundary", "confidence"],
+  "properties": {
+    "anchor_id": {"type": "string"},
+    "title": {"type": "string"},
+    "authors_or_org": {"type": "string"},
+    "source_type": {"enum": ["peer_reviewed_paper", "preprint", "institutional_release", "review", "secondary_article"]},
+    "publication_year": {"type": "integer"},
+    "url": {"type": "string"},
+    "platform": {"type": "string"},
+    "claims": {"type": "array", "items": {"type": "string"}},
+    "measurements": {"type": "object"},
+    "aqlen_modules": {"type": "array", "items": {"type": "string"}},
+    "claim_boundary": {"type": "string"},
+    "confidence": {"enum": ["low", "medium", "high", "very_high"]},
+    "notes": {"type": "string"}
+  }
+}
