@@ -1,0 +1,27 @@
+{
+  "renderer_version": "0.4",
+  "local_server": {
+    "command": "python -m http.server 8000",
+    "open": "http://localhost:8000/dashboard/receipt_graph_renderer_v0_4.html"
+  },
+  "demo_flow": [
+    "Open the renderer URL from a local server.",
+    "Click Load demo export.",
+    "Set Layout to Pipeline lanes.",
+    "Click a readiness-score node.",
+    "Toggle Trace only on.",
+    "Click an edge card and inspect the selected-edge panel.",
+    "Switch to Compact evidence view.",
+    "Use Search to find evidence, calibration, score, or warning text.",
+    "Click Print mode and confirm claim-boundary visibility.",
+    "Export focused trace JSON."
+  ],
+  "expected_result": {
+    "global_claim_boundary_visible": true,
+    "node_claim_boundaries_visible": true,
+    "selected_node_panel_updates_on_click": true,
+    "selected_edge_panel_updates_on_edge_card_click": true,
+    "trace_json_updates_with_focus_and_depth": true,
+    "print_mode_hides_controls_but_keeps_graph_visible": true
+  }
+}
