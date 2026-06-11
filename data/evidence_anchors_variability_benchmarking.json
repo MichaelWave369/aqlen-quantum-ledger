@@ -1,0 +1,35 @@
+[
+  {
+    "anchor_id": "AQLEN-EA-008",
+    "title": "Bounds to electron spin qubit variability for scalable CMOS architectures",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2024,
+    "url": "https://www.nature.com/articles/s41467-024-48557-x",
+    "platform": "silicon MOS quantum dots; interface roughness variability",
+    "claims": ["Atomic-scale interface roughness contributes to spin-qubit variability."],
+    "claim_boundary": "Do not assume CMOS heritage eliminates qubit variability.",
+    "confidence": "high"
+  },
+  {
+    "anchor_id": "AQLEN-EA-009",
+    "title": "Industrial 300 mm wafer processed spin qubits in natural silicon/silicon-germanium",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2025,
+    "url": "https://www.nature.com/articles/s41534-025-01016-x",
+    "platform": "industrial 300-mm Si/SiGe quantum dots",
+    "claims": ["Industrial 300-mm processing supports platform comparison and process feedback."],
+    "claim_boundary": "Industrial process progress does not remove platform-specific tradeoffs.",
+    "confidence": "high"
+  },
+  {
+    "anchor_id": "AQLEN-EA-010",
+    "title": "A crossbar chip for benchmarking semiconductor spin qubits",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2026,
+    "url": "https://www.nature.com/articles/s41928-026-01569-5",
+    "platform": "semiconductor spin-qubit crossbar benchmarking architecture",
+    "claims": ["Crossbar arrays can support scalable characterization and benchmarking of spin-qubit tiles."],
+    "claim_boundary": "Benchmarking architecture, not proof of full-scale useful quantum computation.",
+    "confidence": "high"
+  }
+]
