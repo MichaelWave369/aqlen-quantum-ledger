@@ -1,0 +1,43 @@
+{
+  "name": "AQLEN graph renderer v0.6 CI validation commands",
+  "status": "prototype",
+  "commands": [
+    {
+      "label": "Validate primary dashboard payload",
+      "command": "python tools/validate_dashboard_payload.py dashboard/receipt_graph_dashboard_demo.json"
+    },
+    {
+      "label": "Validate primary dashboard payload with JSON report",
+      "command": "python tools/validate_dashboard_payload.py dashboard/receipt_graph_dashboard_demo.json --json"
+    },
+    {
+      "label": "Run full fixture suite",
+      "command": "python tools/validate_dashboard_fixture_suite.py"
+    },
+    {
+      "label": "Run full fixture suite with machine-readable output",
+      "command": "python tools/validate_dashboard_fixture_suite.py --json"
+    },
+    {
+      "label": "CI target command",
+      "command": "python tools/validate_dashboard_fixture_suite.py"
+    }
+  ],
+  "positive_fixtures": [
+    "dashboard/receipt_graph_dashboard_demo.json",
+    "dashboard/fixtures/score_focus_demo.json",
+    "dashboard/fixtures/evidence_focus_demo.json",
+    "dashboard/fixtures/noise_focus_demo.json"
+  ],
+  "negative_fixtures": [
+    "dashboard/fixtures/negative_missing_global_boundary.json",
+    "dashboard/fixtures/negative_broken_edge_link.json",
+    "dashboard/fixtures/negative_duplicate_node_id.json",
+    "dashboard/fixtures/negative_boundary_missing_node.json",
+    "dashboard/fixtures/negative_focus_trace_missing_node.json"
+  ],
+  "warning_fixtures": [
+    "dashboard/fixtures/warning_summary_count_drift.json"
+  ],
+  "claim_boundary": "The fixture suite validates dashboard payload integrity. It does not validate scientific truth claims."
+}
