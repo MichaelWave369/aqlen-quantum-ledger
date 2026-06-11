@@ -1,0 +1,32 @@
+{
+  "name": "AQLEN Receipt Graph Query Commands",
+  "version": "0.1",
+  "commands": [
+    {
+      "label": "Graph summary",
+      "command": "python tools/receipt_graph_explorer.py summary --graph examples/receipt_graph_minimal.json",
+      "answers": "How many nodes and edges are in this ledger graph?"
+    },
+    {
+      "label": "Score trace",
+      "command": "python tools/receipt_graph_explorer.py score-trace score.demo.qec_readiness --graph examples/receipt_graph_minimal.json --depth 6",
+      "answers": "Which evidence anchors, qubit receipts, noise events, and calibration receipts support this readiness score?"
+    },
+    {
+      "label": "Upstream evidence path",
+      "command": "python tools/receipt_graph_explorer.py upstream score.demo.qec_readiness --graph examples/receipt_graph_minimal.json --depth 6",
+      "answers": "What upstream records contributed to this node?"
+    },
+    {
+      "label": "Downstream impact path",
+      "command": "python tools/receipt_graph_explorer.py downstream evidence.unsw.morello.2024 --graph examples/receipt_graph_minimal.json --depth 6",
+      "answers": "What later records depend on this evidence anchor?"
+    },
+    {
+      "label": "Immediate neighbors",
+      "command": "python tools/receipt_graph_explorer.py neighbors score.demo.qec_readiness --graph examples/receipt_graph_minimal.json",
+      "answers": "What directly links into or out of this node?"
+    }
+  ],
+  "claim_boundary": "These query commands inspect prototype research receipts. They do not prove fault-tolerant quantum deployment or practical quantum computing readiness."
+}
