@@ -1,0 +1,11 @@
+{
+  "fixture_name": "evidence_focus_demo",
+  "fixture_purpose": "Validate evidence-anchor focus mode and source-status inspection.",
+  "expected_focus_id": "ev-silicon-spin-foundry",
+  "expected_visible_boundaries": [
+    "global_claim_boundary",
+    "ev-silicon-spin-foundry"
+  ],
+  "source_payload": "dashboard/receipt_graph_dashboard_demo.json",
+  "local_url": "http://localhost:8000/dashboard/receipt_graph_renderer_v0_4.html"
+}
