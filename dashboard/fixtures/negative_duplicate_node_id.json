@@ -1,0 +1,33 @@
+{
+  "dashboard_payload_version": "0.5-negative",
+  "graph_id": "aqlen.negative.duplicate_node_id",
+  "graph_version": "0.1",
+  "global_claim_boundary": "Negative fixture: this payload is intentionally invalid and should fail validation.",
+  "nodes": [
+    {
+      "id": "duplicate-node",
+      "type": "evidence_anchor",
+      "label": "Duplicate evidence node A",
+      "group": "evidence",
+      "status": "demo"
+    },
+    {
+      "id": "duplicate-node",
+      "type": "readiness_score",
+      "label": "Duplicate score node B",
+      "group": "score",
+      "status": "demo"
+    }
+  ],
+  "edges": [],
+  "summary_cards": {
+    "node_count": 2,
+    "edge_count": 0
+  },
+  "boundary_cards": [],
+  "focus_trace": {
+    "focus_id": "duplicate-node",
+    "upstream": [],
+    "downstream": []
+  }
+}
