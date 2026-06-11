@@ -1,0 +1,97 @@
+{
+  "graph_id": "aqlen-receipt-graph-demo-001",
+  "version": "v0.1",
+  "created_at": "2026-06-10",
+  "summary": "Minimal AQLEN graph linking evidence, provenance, noise, calibration, and readiness scoring.",
+  "nodes": [
+    {
+      "id": "ev-silicon-spin-foundry",
+      "type": "evidence_anchor",
+      "label": "Silicon spin-qubit foundry evidence lane",
+      "status": "research_anchor",
+      "claim_boundary": "Supports manufacturability research direction; does not prove fault-tolerant deployment."
+    },
+    {
+      "id": "qbit-demo-001",
+      "type": "qubit_receipt",
+      "label": "Demo silicon spin qubit receipt",
+      "status": "sample"
+    },
+    {
+      "id": "noise-demo-001",
+      "type": "noise_event",
+      "label": "Sample drift and noise event",
+      "status": "sample"
+    },
+    {
+      "id": "cal-demo-001",
+      "type": "calibration_receipt",
+      "label": "Sample calibration response",
+      "status": "sample"
+    },
+    {
+      "id": "score-demo-001",
+      "type": "readiness_score",
+      "label": "Sample QEC readiness score",
+      "status": "sample",
+      "claim_boundary": "Readiness score is an internal assessment metric, not a guarantee of quantum advantage."
+    },
+    {
+      "id": "module-temporal-error-memory",
+      "type": "module",
+      "label": "Temporal Error Memory",
+      "status": "v0.2_module"
+    },
+    {
+      "id": "module-predictive-calibration",
+      "type": "module",
+      "label": "Predictive Calibration Engine",
+      "status": "v0.2_module"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ev-silicon-spin-foundry",
+      "to": "qbit-demo-001",
+      "type": "supports",
+      "note": "Evidence lane motivates provenance tracking for silicon spin-qubit devices.",
+      "weight": 0.8
+    },
+    {
+      "from": "noise-demo-001",
+      "to": "qbit-demo-001",
+      "type": "measured_on",
+      "note": "Noise event is attached to a specific qubit receipt."
+    },
+    {
+      "from": "cal-demo-001",
+      "to": "noise-demo-001",
+      "type": "mitigated_by",
+      "note": "Calibration receipt records the response to the observed noise event."
+    },
+    {
+      "from": "score-demo-001",
+      "to": "qbit-demo-001",
+      "type": "derived_from",
+      "note": "Readiness score is derived from the device receipt and related event history."
+    },
+    {
+      "from": "noise-demo-001",
+      "to": "module-temporal-error-memory",
+      "type": "feeds_module",
+      "note": "Noise events feed temporal error memory."
+    },
+    {
+      "from": "cal-demo-001",
+      "to": "module-predictive-calibration",
+      "type": "feeds_module",
+      "note": "Calibration receipts feed predictive calibration learning."
+    },
+    {
+      "from": "cal-demo-001",
+      "to": "score-demo-001",
+      "type": "updates",
+      "note": "Calibration outcome updates readiness assessment inputs."
+    }
+  ]
+}
