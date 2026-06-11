@@ -1,0 +1,31 @@
+{
+  "name": "AQLEN dashboard validation triage commands",
+  "status": "prototype",
+  "commands": [
+    {
+      "label": "Run fixture suite",
+      "command": "python tools/validate_dashboard_fixture_suite.py"
+    },
+    {
+      "label": "Run fixture suite as JSON",
+      "command": "python tools/validate_dashboard_fixture_suite.py --json"
+    },
+    {
+      "label": "Check missing global boundary negative fixture",
+      "command": "python tools/validate_dashboard_payload.py dashboard/fixtures/negative_missing_global_boundary.json"
+    },
+    {
+      "label": "Check broken edge negative fixture",
+      "command": "python tools/validate_dashboard_payload.py dashboard/fixtures/negative_broken_edge_link.json"
+    },
+    {
+      "label": "Check duplicate node negative fixture",
+      "command": "python tools/validate_dashboard_payload.py dashboard/fixtures/negative_duplicate_node_id.json"
+    },
+    {
+      "label": "Check summary drift warning fixture",
+      "command": "python tools/validate_dashboard_payload.py dashboard/fixtures/warning_summary_count_drift.json"
+    }
+  ],
+  "triage_guide": "docs/DASHBOARD_VALIDATION_TRIAGE_GUIDE.md"
+}
