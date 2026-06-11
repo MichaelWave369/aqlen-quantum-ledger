@@ -18,6 +18,7 @@
       --red: #ff7a7a;
       --purple: #b38cff;
       --orange: #ffb86b;
+      --blue: #79a7ff;
     }
 
     * { box-sizing: border-box; }
@@ -36,13 +37,13 @@
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
-      z-index: 4;
+      z-index: 8;
     }
 
     h1, h2, h3, p { margin-top: 0; }
     h1 { font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -0.04em; margin-bottom: 6px; }
     h1 span { color: var(--gold); }
-    .subtitle { color: var(--muted); max-width: 960px; margin: 0; }
+    .subtitle { color: var(--muted); max-width: 1060px; margin: 0; }
     .boundary-banner {
       margin-top: 18px;
       padding: 14px 16px;
@@ -52,7 +53,7 @@
       color: #ffe7a3;
     }
 
-    main { padding: 24px; max-width: 1560px; margin: 0 auto; }
+    main { padding: 24px; max-width: 1660px; margin: 0 auto; }
     .toolbar {
       display: grid;
       grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -74,6 +75,14 @@
     button.warning-btn { background: linear-gradient(135deg, #6a4620, #a76a28); }
     button:disabled { opacity: 0.55; cursor: not-allowed; }
 
+    label.control-label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
     input[type="file"] { color: var(--muted); }
     input[type="search"], input[type="number"], select {
       background: var(--panel);
@@ -82,7 +91,9 @@
       border-radius: 10px;
       padding: 10px 12px;
       min-width: 0;
+      width: 100%;
     }
+    input[type="checkbox"] { width: 18px; height: 18px; }
 
     .span-2 { grid-column: span 2; }
     .span-3 { grid-column: span 3; }
@@ -125,6 +136,93 @@
     .metric b { display: block; font-size: 1.45rem; color: var(--cyan); }
     .metric span { color: var(--muted); font-size: 0.85rem; }
 
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 0;
+    }
+
+    .graph-shell {
+      position: relative;
+      overflow: hidden;
+      min-height: 620px;
+      border: 1px solid rgba(66, 215, 255, 0.16);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(66, 215, 255, 0.15), transparent 24%),
+        radial-gradient(circle at 88% 76%, rgba(243, 198, 92, 0.12), transparent 26%),
+        linear-gradient(135deg, rgba(4, 10, 18, 0.72), rgba(9, 21, 35, 0.92));
+      margin-bottom: 18px;
+    }
+    .graph-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black 20%, transparent 88%);
+      pointer-events: none;
+    }
+    .graph-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .graph-node {
+      position: absolute;
+      width: 190px;
+      min-height: 104px;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--line);
+      background: rgba(8, 18, 30, 0.94);
+      border-radius: 16px;
+      padding: 12px;
+      z-index: 2;
+      cursor: pointer;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.32);
+      transition: transform 0.14s ease, border-color 0.14s ease, opacity 0.14s ease, background 0.14s ease;
+    }
+    .graph-node:hover { transform: translate(-50%, -50%) scale(1.03); border-color: rgba(66, 215, 255, 0.86); }
+    .graph-node.focused {
+      border-color: var(--gold);
+      background: rgba(243, 198, 92, 0.13);
+      box-shadow: 0 0 0 2px rgba(243, 198, 92, 0.18), 0 18px 44px rgba(0,0,0,0.42);
+    }
+    .graph-node.trace { border-color: rgba(243, 198, 92, 0.64); }
+    .graph-node.dimmed { opacity: 0.24; }
+    .graph-node.hidden-by-filter { display: none; }
+    .graph-node h3 { font-size: 0.96rem; margin-bottom: 6px; }
+    .graph-node .meta { font-size: 0.72rem; }
+    .graph-lane-label {
+      position: absolute;
+      z-index: 1;
+      top: 10px;
+      color: rgba(238,246,255,0.42);
+      font-weight: 900;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .edge-line { stroke: rgba(159, 180, 204, 0.34); stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .edge-line.trace { stroke: rgba(243, 198, 92, 0.94); stroke-width: 3; marker-end: url(#arrowTrace); }
+    .edge-line.dimmed { opacity: 0.18; }
+    .edge-label {
+      fill: rgba(238,246,255,0.76);
+      font-size: 11px;
+      font-weight: 800;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+      pointer-events: none;
+    }
+    .edge-label.trace { fill: #ffe7a3; }
+
     .node-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -163,8 +261,11 @@
     .badge.calibration { background: var(--cyan); }
     .badge.score { background: var(--purple); }
     .badge.architecture { background: #b8c6d8; }
+    .badge.other { background: var(--blue); }
     .pill { color: var(--text); background: rgba(255,255,255,0.10); border: 1px solid var(--line); }
     .pill.trace { border-color: var(--gold); color: #ffe7a3; }
+    .pill.focus { border-color: var(--gold); background: rgba(243, 198, 92, 0.13); color: #ffe7a3; }
+    .pill.boundary { border-color: rgba(243, 198, 92, 0.4); color: #ffe7a3; }
 
     .node-card h3 { margin-bottom: 6px; font-size: 1.05rem; }
     .meta { color: var(--muted); font-size: 0.84rem; word-break: break-word; }
@@ -274,6 +375,11 @@
       <button id="exportTrace" class="warning-btn span-2">Export focused trace</button>
       <select id="focusSelect" class="span-3" aria-label="Focus node"></select>
       <button id="applyFocus" class="span-2">Apply focus</button>
+      <select id="layoutSelect" class="span-2" aria-label="Graph layout preset">
+        <option value="pipeline">Pipeline lanes</option>
+        <option value="radial">Radial trace</option>
+      </select>
+      <label class="control-label span-2"><input id="traceOnlyToggle" type="checkbox" /> Trace only</label>
       <button id="showPaste" class="secondary span-2">Paste JSON</button>
     </div>
 
@@ -285,6 +391,13 @@
     </section>
 
     <section class="summary" id="summaryCards"></section>
+
+    <section class="panel" style="margin-bottom: 18px;">
+      <h2>Visual Graph Layout</h2>
+      <p id="visualGraphSummary" class="small">Load an export to render the graph layout.</p>
+      <div class="legend" id="legend"></div>
+      <div id="visualGraph" class="graph-shell" role="application" aria-label="AQLEN receipt graph visual layout"></div>
+    </section>
 
     <section class="panel" style="margin-bottom: 18px;">
       <h2>Trace Map</h2>
@@ -328,6 +441,7 @@
     let payload = null;
     let focusId = null;
     let workingTrace = null;
+    let graphPositions = new Map();
 
     const groupClass = (group) => String(group || 'other').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
     const byId = (items) => Object.fromEntries((items || []).map((item) => [item.id, item]));
@@ -355,6 +469,16 @@
       return Math.max(1, Math.min(12, Number.isFinite(raw) ? raw : 6));
     }
 
+    function getFilterState() {
+      return {
+        query: document.getElementById('searchInput').value.trim().toLowerCase(),
+        group: document.getElementById('groupFilter').value || 'all',
+        edgeType: document.getElementById('edgeFilter').value || 'all',
+        traceOnly: document.getElementById('traceOnlyToggle').checked,
+        layout: document.getElementById('layoutSelect').value || 'pipeline'
+      };
+    }
+
     function computeTrace(data, selectedId, maxDepth = 6) {
       if (!data || !selectedId) return { focus_id: null, upstream: [], downstream: [] };
       const edges = data.edges || [];
@@ -375,12 +499,15 @@
 
     function walkTrace(startId, edgeMap, nextKey, maxDepth) {
       const rows = [];
+      const seenEdges = new Set();
       const seenNodes = new Set([startId]);
       const queue = [{ nodeId: startId, depth: 0 }];
       while (queue.length) {
         const current = queue.shift();
         if (current.depth >= maxDepth) continue;
         (edgeMap.get(current.nodeId) || []).forEach((edge) => {
+          if (seenEdges.has(edge.id)) return;
+          seenEdges.add(edge.id);
           const nextId = edge[nextKey];
           const depth = current.depth + 1;
           rows.push({ depth, node_id: nextId, via_edge_id: edge.id });
@@ -402,6 +529,8 @@
       document.getElementById('graphSummary').textContent = `${payload.graph_id || 'unknown graph'} — ${payload.summary || ''}`;
       renderControls(payload);
       renderSummary(payload.summary_cards || {}, payload);
+      renderLegend(payload);
+      renderVisualGraph(payload);
       renderGraphMap(payload);
       renderNodes(payload);
       renderBoundaries(payload.boundary_cards || []);
@@ -415,14 +544,14 @@
       const clone = JSON.parse(JSON.stringify(data || {}));
       clone.nodes = clone.nodes || [];
       clone.edges = (clone.edges || []).map((edge, index) => ({
-        id: edge.id || `${edge.source || 'unknown'}->${edge.target || 'unknown'}:${edge.type || index}`,
+        id: edge.id || `${edge.source || edge.from || 'unknown'}->${edge.target || edge.to || 'unknown'}:${edge.type || index}`,
         label: edge.label || edge.type || 'edge',
         source: edge.source ?? edge.from,
         target: edge.target ?? edge.to,
         note: edge.note || '',
         type: edge.type || edge.label || 'edge',
         weight: edge.weight ?? null
-      }));
+      })).filter((edge) => edge.source && edge.target);
       clone.boundary_cards = clone.boundary_cards || [];
       clone.summary_cards = clone.summary_cards || deriveSummary(clone);
       return clone;
@@ -447,13 +576,13 @@
 
     function renderFocusSelect(data) {
       const select = document.getElementById('focusSelect');
-      const current = select.value || focusId;
+      const current = focusId;
       select.innerHTML = '';
       (data.nodes || []).forEach((node) => {
         const option = document.createElement('option');
         option.value = node.id;
         option.textContent = `${node.label || node.id} (${node.type || 'node'})`;
-        if (node.id === current || node.id === focusId) option.selected = true;
+        if (node.id === current) option.selected = true;
         select.appendChild(option);
       });
     }
@@ -492,6 +621,203 @@
         card.innerHTML = `<b>${escapeHtml(value)}</b><span>${escapeHtml(label)}</span>`;
         root.appendChild(card);
       });
+    }
+
+    function renderLegend(data) {
+      const root = document.getElementById('legend');
+      const groups = Array.from(new Set((data.nodes || []).map((node) => node.group || 'other'))).sort();
+      root.innerHTML = groups.map((group) => `<span class="badge ${groupClass(group)}">${escapeHtml(group)}</span>`).join('') +
+        '<span class="pill focus">focus</span><span class="pill trace">trace path</span><span class="pill boundary">claim boundary</span>';
+    }
+
+    function renderVisualGraph(data) {
+      const root = document.getElementById('visualGraph');
+      const filters = getFilterState();
+      const nodes = data.nodes || [];
+      const edges = data.edges || [];
+      const traceIds = traceNodeIds(workingTrace || data.focus_trace || {});
+      const traceEdges = traceEdgeIds(workingTrace || data.focus_trace || {});
+      const nodeLookup = byId(nodes);
+      graphPositions = computeLayout(nodes, edges, filters.layout, traceIds);
+      root.innerHTML = '';
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'graph-svg');
+      svg.setAttribute('viewBox', '0 0 1000 620');
+      svg.innerHTML = `
+        <defs>
+          <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="rgba(159,180,204,0.55)"></path></marker>
+          <marker id="arrowTrace" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="rgba(243,198,92,0.95)"></path></marker>
+        </defs>`;
+
+      renderLaneLabels(root, nodes, filters.layout);
+
+      edges.forEach((edge) => {
+        const source = graphPositions.get(edge.source);
+        const target = graphPositions.get(edge.target);
+        if (!source || !target) return;
+        const inTrace = traceEdges.has(edge.id);
+        const sourceVisible = shouldShowNode(nodeLookup[edge.source], traceIds, filters);
+        const targetVisible = shouldShowNode(nodeLookup[edge.target], traceIds, filters);
+        const edgeVisible = shouldShowEdge(edge, traceEdges, filters) && sourceVisible && targetVisible;
+        if (!edgeVisible) return;
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const midX = (source.x + target.x) / 2;
+        const bend = Math.max(35, Math.min(90, Math.abs(target.x - source.x) / 5));
+        path.setAttribute('d', `M ${source.x} ${source.y} C ${midX} ${source.y - bend}, ${midX} ${target.y + bend}, ${target.x} ${target.y}`);
+        path.setAttribute('class', `edge-line ${inTrace ? 'trace' : ''} ${traceIds.size && !inTrace ? 'dimmed' : ''}`);
+        svg.appendChild(path);
+
+        if (inTrace) {
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', String(midX));
+          text.setAttribute('y', String((source.y + target.y) / 2 - 10));
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('class', 'edge-label trace');
+          text.textContent = edge.label || edge.type || 'edge';
+          svg.appendChild(text);
+        }
+      });
+
+      root.appendChild(svg);
+
+      nodes.forEach((node) => {
+        const position = graphPositions.get(node.id);
+        if (!position) return;
+        const inTrace = traceIds.has(node.id);
+        const visible = shouldShowNode(node, traceIds, filters);
+        if (!visible) return;
+        const div = document.createElement('article');
+        const classes = ['graph-node'];
+        if (node.id === workingTrace?.focus_id) classes.push('focused');
+        else if (inTrace) classes.push('trace');
+        else if (traceIds.size) classes.push('dimmed');
+        div.className = classes.join(' ');
+        div.dataset.nodeId = node.id;
+        div.dataset.group = node.group || 'other';
+        div.style.left = `${position.x / 10}%`;
+        div.style.top = `${position.y / 6.2}%`;
+        div.innerHTML = `
+          <span class="badge ${groupClass(node.group)}">${escapeHtml(node.badge || node.type || 'Node')}</span>
+          ${node.id === workingTrace?.focus_id ? '<span class="pill focus">focus</span>' : ''}
+          ${inTrace && node.id !== workingTrace?.focus_id ? '<span class="pill trace">trace</span>' : ''}
+          ${(node.claim_boundary || (node.warnings || []).length) ? '<span class="pill boundary">boundary</span>' : ''}
+          <h3>${escapeHtml(node.label || node.id)}</h3>
+          <div class="meta">${escapeHtml(node.type || 'unknown')} · ${escapeHtml(node.status || 'unknown')}</div>
+        `;
+        div.addEventListener('click', () => setFocus(node.id));
+        root.appendChild(div);
+      });
+
+      const traceOnlyText = filters.traceOnly ? ' · trace-only view' : '';
+      document.getElementById('visualGraphSummary').textContent = `${filters.layout} layout · ${nodes.length} node(s) · ${edges.length} edge(s) · focus ${focusId || 'none'}${traceOnlyText}`;
+    }
+
+    function renderLaneLabels(root, nodes, layout) {
+      if (layout !== 'pipeline') return;
+      const lanes = laneOrder(nodes);
+      const xPositions = laneXPositions(lanes);
+      lanes.forEach((lane) => {
+        const div = document.createElement('div');
+        div.className = 'graph-lane-label';
+        div.style.left = `${xPositions.get(lane) / 10}%`;
+        div.textContent = lane;
+        root.appendChild(div);
+      });
+    }
+
+    function computeLayout(nodes, edges, layout, traceIds) {
+      if (layout === 'radial') return computeRadialLayout(nodes, traceIds);
+      return computePipelineLayout(nodes, edges);
+    }
+
+    function laneOrder(nodes) {
+      const preferred = ['evidence', 'device', 'error', 'calibration', 'score', 'architecture', 'other'];
+      const present = new Set((nodes || []).map((node) => node.group || 'other'));
+      const ordered = preferred.filter((lane) => present.has(lane));
+      Array.from(present).sort().forEach((lane) => { if (!ordered.includes(lane)) ordered.push(lane); });
+      return ordered.length ? ordered : ['other'];
+    }
+
+    function laneXPositions(lanes) {
+      const map = new Map();
+      if (lanes.length === 1) {
+        map.set(lanes[0], 500);
+        return map;
+      }
+      lanes.forEach((lane, index) => {
+        map.set(lane, 110 + (780 * index / (lanes.length - 1)));
+      });
+      return map;
+    }
+
+    function computePipelineLayout(nodes, edges) {
+      const lanes = laneOrder(nodes);
+      const xPositions = laneXPositions(lanes);
+      const grouped = new Map();
+      nodes.forEach((node) => {
+        const lane = node.group || 'other';
+        if (!grouped.has(lane)) grouped.set(lane, []);
+        grouped.get(lane).push(node);
+      });
+      const pos = new Map();
+      lanes.forEach((lane) => {
+        const laneNodes = (grouped.get(lane) || []).sort((a, b) => scoreSort(a, b, edges));
+        laneNodes.forEach((node, index) => {
+          const gap = 480 / Math.max(1, laneNodes.length);
+          pos.set(node.id, { x: xPositions.get(lane), y: 92 + gap * (index + 0.5) });
+        });
+      });
+      return pos;
+    }
+
+    function scoreSort(a, b, edges) {
+      const outgoingA = edges.filter((edge) => edge.source === a.id).length;
+      const outgoingB = edges.filter((edge) => edge.source === b.id).length;
+      const incomingA = edges.filter((edge) => edge.target === a.id).length;
+      const incomingB = edges.filter((edge) => edge.target === b.id).length;
+      return (incomingA - outgoingA) - (incomingB - outgoingB) || String(a.label || a.id).localeCompare(String(b.label || b.id));
+    }
+
+    function computeRadialLayout(nodes, traceIds) {
+      const pos = new Map();
+      const centerX = 500;
+      const centerY = 310;
+      const focus = nodes.find((node) => node.id === focusId);
+      if (focus) pos.set(focus.id, { x: centerX, y: centerY });
+      const traceNodes = nodes.filter((node) => node.id !== focusId && traceIds.has(node.id));
+      const otherNodes = nodes.filter((node) => node.id !== focusId && !traceIds.has(node.id));
+      placeRing(traceNodes, 205, centerX, centerY, pos, -Math.PI / 2);
+      placeRing(otherNodes, 290, centerX, centerY, pos, Math.PI / 2);
+      return pos;
+    }
+
+    function placeRing(nodes, radius, centerX, centerY, pos, offset) {
+      nodes.forEach((node, index) => {
+        const angle = offset + (2 * Math.PI * index / Math.max(1, nodes.length));
+        pos.set(node.id, { x: centerX + Math.cos(angle) * radius, y: centerY + Math.sin(angle) * radius });
+      });
+    }
+
+    function shouldShowNode(node, traceIds, filters) {
+      if (!node) return false;
+      if (filters.traceOnly && !traceIds.has(node.id)) return false;
+      if (filters.group !== 'all' && (node.group || 'other') !== filters.group) return false;
+      if (filters.query) {
+        const haystack = [node.id, node.label, node.type, node.status, node.group, node.claim_boundary, ...(node.warnings || [])].join(' ').toLowerCase();
+        if (!haystack.includes(filters.query)) return false;
+      }
+      return true;
+    }
+
+    function shouldShowEdge(edge, traceEdges, filters) {
+      if (filters.traceOnly && !traceEdges.has(edge.id)) return false;
+      if (filters.edgeType !== 'all' && edge.type !== filters.edgeType) return false;
+      if (filters.query) {
+        const haystack = [edge.id, edge.label, edge.type, edge.note, edge.source, edge.target].join(' ').toLowerCase();
+        if (!haystack.includes(filters.query)) return false;
+      }
+      return true;
     }
 
     function renderGraphMap(data) {
@@ -534,11 +860,12 @@
         card.className = classes.join(' ');
         card.dataset.nodeId = node.id;
         card.dataset.group = node.group || 'other';
-        card.dataset.search = [node.id, node.label, node.type, node.status, node.group, ...(node.warnings || [])].join(' ').toLowerCase();
-        const warnings = (node.warnings || []).map((w) => `<div class="warning">${escapeHtml(w)}</div>`).join('');
+        card.dataset.search = [node.id, node.label, node.type, node.status, node.group, node.claim_boundary, ...(node.warnings || [])].join(' ').toLowerCase();
+        const warnings = [node.claim_boundary, ...(node.warnings || [])].filter(Boolean).map((w) => `<div class="warning">${escapeHtml(w)}</div>`).join('');
         card.innerHTML = `
           <span class="badge ${groupClass(node.group)}">${escapeHtml(node.badge || node.type || 'Node')}</span>
-          ${traceIds.has(node.id) ? '<span class="pill trace">trace</span>' : ''}
+          ${node.id === workingTrace?.focus_id ? '<span class="pill focus">focus</span>' : ''}
+          ${traceIds.has(node.id) && node.id !== workingTrace?.focus_id ? '<span class="pill trace">trace</span>' : ''}
           <h3>${escapeHtml(node.label || node.id)}</h3>
           <div class="meta">${escapeHtml(node.id)}</div>
           <div class="meta">type: ${escapeHtml(node.type || 'unknown')} · status: ${escapeHtml(node.status || 'unknown')}</div>
@@ -629,21 +956,20 @@
 
     function applyFilters() {
       if (!payload) return;
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      const group = document.getElementById('groupFilter').value || 'all';
-      const edgeType = document.getElementById('edgeFilter').value || 'all';
+      const filters = getFilterState();
+      const traceIds = traceNodeIds(workingTrace || {});
+      const traceEdges = traceEdgeIds(workingTrace || {});
       let visibleNodes = 0;
       let visibleEdges = 0;
       document.querySelectorAll('.node-card').forEach((card) => {
-        const matchesGroup = group === 'all' || card.dataset.group === group;
-        const matchesQuery = !query || card.dataset.search.includes(query);
-        const visible = matchesGroup && matchesQuery;
+        const node = (payload.nodes || []).find((item) => item.id === card.dataset.nodeId);
+        const visible = shouldShowNode(node, traceIds, filters);
         card.classList.toggle('hidden-by-filter', !visible);
         if (visible) visibleNodes += 1;
       });
       document.querySelectorAll('#edgeList .edge-card').forEach((card) => {
-        const matchesType = edgeType === 'all' || card.dataset.edgeType === edgeType;
-        const matchesQuery = !query || card.dataset.search.includes(query);
+        const matchesType = filters.edgeType === 'all' || card.dataset.edgeType === filters.edgeType;
+        const matchesQuery = !filters.query || card.dataset.search.includes(filters.query);
         const visible = matchesType && matchesQuery;
         card.classList.toggle('hidden-by-filter', !visible);
         if (visible) visibleEdges += 1;
@@ -677,6 +1003,7 @@
         exported_at: new Date().toISOString(),
         graph_id: payload.graph_id,
         focus_id: workingTrace.focus_id,
+        layout: document.getElementById('layoutSelect').value,
         global_claim_boundary: payload.global_claim_boundary,
         focus_trace: workingTrace,
         nodes: (payload.nodes || []).filter((node) => traceIds.has(node.id)),
@@ -705,15 +1032,19 @@
     });
     document.getElementById('applyFocus').addEventListener('click', () => setFocus(document.getElementById('focusSelect').value));
     document.getElementById('focusSelect').addEventListener('change', (event) => setFocus(event.target.value));
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
-    document.getElementById('groupFilter').addEventListener('change', applyFilters);
-    document.getElementById('edgeFilter').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', () => render(payload));
+    document.getElementById('groupFilter').addEventListener('change', () => render(payload));
+    document.getElementById('edgeFilter').addEventListener('change', () => render(payload));
     document.getElementById('depthInput').addEventListener('change', () => setFocus(focusId));
+    document.getElementById('layoutSelect').addEventListener('change', () => render(payload));
+    document.getElementById('traceOnlyToggle').addEventListener('change', () => render(payload));
     document.getElementById('resetFilters').addEventListener('click', () => {
       document.getElementById('searchInput').value = '';
       document.getElementById('groupFilter').value = 'all';
       document.getElementById('edgeFilter').value = 'all';
+      document.getElementById('traceOnlyToggle').checked = false;
       applyFilters();
+      renderVisualGraph(payload);
     });
     document.getElementById('exportTrace').addEventListener('click', exportFocusedTrace);
 
