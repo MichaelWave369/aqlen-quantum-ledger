@@ -1,0 +1,30 @@
+{
+  "version": "dashboard_validation_v0_7",
+  "commands": [
+    {
+      "name": "validate_demo_payload",
+      "description": "Validate the default dashboard export payload.",
+      "command": "python tools/validate_dashboard_payload.py dashboard/receipt_graph_dashboard_demo.json"
+    },
+    {
+      "name": "validate_demo_payload_json",
+      "description": "Validate the default dashboard export and print a machine-readable report.",
+      "command": "python tools/validate_dashboard_payload.py dashboard/receipt_graph_dashboard_demo.json --json"
+    },
+    {
+      "name": "run_fixture_suite",
+      "description": "Run positive, negative, and warning fixture checks.",
+      "command": "python tools/validate_dashboard_fixture_suite.py"
+    },
+    {
+      "name": "run_fixture_suite_with_report",
+      "description": "Run the full fixture suite and write the v0.7 validation report artifact.",
+      "command": "python tools/validate_dashboard_fixture_suite.py --report-out dashboard/validation_reports/dashboard_fixture_suite_report.json"
+    },
+    {
+      "name": "run_fixture_suite_json_with_report",
+      "description": "Run the full suite, write the report artifact, and print JSON to stdout.",
+      "command": "python tools/validate_dashboard_fixture_suite.py --json --report-out dashboard/validation_reports/dashboard_fixture_suite_report.json"
+    }
+  ]
+}
