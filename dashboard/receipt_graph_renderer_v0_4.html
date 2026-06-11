@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AQLEN Receipt Graph Renderer v0.4</title>
+  <style>
+    :root {
+      --bg: #06101d;
+      --panel: #101d2e;
+      --panel-2: #0b1524;
+      --text: #eef6ff;
+      --muted: #9fb4cc;
+      --line: #273d5a;
+      --cyan: #42d7ff;
+      --gold: #f3c65c;
+      --green: #63d99a;
+      --red: #ff7a7a;
+      --purple: #b38cff;
+      --orange: #ffb86b;
+      --blue: #79a7ff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #12304d 0, var(--bg) 36%, #02070d 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 28px 24px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 12, 23, 0.84);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(2rem, 4vw, 3.6rem); letter-spacing: -0.04em; margin-bottom: 6px; }
+    h1 span { color: var(--gold); }
+    .subtitle { color: var(--muted); max-width: 1120px; margin: 0; }
+    .boundary-banner {
+      margin-top: 16px;
+      padding: 13px 15px;
+      border: 1px solid rgba(243, 198, 92, 0.42);
+      border-radius: 14px;
+      background: rgba(243, 198, 92, 0.09);
+      color: #ffe7a3;
+    }
+
+    main { padding: 22px; max-width: 1760px; margin: 0 auto; }
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    @media (max-width: 1120px) { .toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); } .span-2,.span-3,.span-4 { grid-column: span 1; } }
+    @media (max-width: 720px) { .toolbar { grid-template-columns: 1fr; } }
+
+    button, input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, #17647d, #1c88aa);
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    button.secondary { background: linear-gradient(135deg, #293a56, #374d70); }
+    button.warning-btn { background: linear-gradient(135deg, #6a4620, #a76a28); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    label.control-label { color: var(--muted); font-size: 0.84rem; display: block; }
+    input[type="file"] { color: var(--muted); }
+    input[type="search"], input[type="number"], select {
+      margin-top: 6px;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .shell { display: grid; grid-template-columns: minmax(0, 1fr) 430px; gap: 18px; align-items: start; }
+    @media (max-width: 1180px) { .shell { grid-template-columns: 1fr; } }
+    .panel {
+      background: linear-gradient(180deg, rgba(16, 29, 46, 0.96), rgba(8, 15, 25, 0.96));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.26);
+    }
+    .summary { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 12px; margin-bottom: 18px; }
+    @media (max-width: 900px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+    .metric { background: rgba(66, 215, 255, 0.08); border: 1px solid rgba(66, 215, 255, 0.18); border-radius: 14px; padding: 14px; }
+    .metric b { display: block; font-size: 1.35rem; color: var(--cyan); }
+    .metric span { color: var(--muted); font-size: 0.82rem; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+    .pill, .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 900;
+      color: #06101c;
+      background: var(--cyan);
+      margin: 0 5px 6px 0;
+      border: 1px solid transparent;
+    }
+    .pill { color: var(--text); background: rgba(255,255,255,0.09); border-color: var(--line); }
+    .pill.focus { border-color: var(--gold); background: rgba(243, 198, 92, 0.12); color: #ffe7a3; }
+    .pill.trace { border-color: var(--gold); color: #ffe7a3; }
+    .pill.boundary { border-color: rgba(243, 198, 92, 0.42); color: #ffe7a3; }
+    .pill.warn { border-color: rgba(255, 184, 107, 0.55); color: #ffd4a3; }
+    .badge.evidence { background: var(--gold); }
+    .badge.device { background: var(--green); }
+    .badge.error { background: var(--red); }
+    .badge.calibration { background: var(--cyan); }
+    .badge.score { background: var(--purple); }
+    .badge.architecture { background: #b8c6d8; }
+    .badge.other { background: var(--blue); }
+
+    .graph-shell {
+      position: relative;
+      overflow: hidden;
+      min-height: 690px;
+      border: 1px solid rgba(66, 215, 255, 0.16);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(66, 215, 255, 0.15), transparent 24%),
+        radial-gradient(circle at 88% 76%, rgba(243, 198, 92, 0.12), transparent 26%),
+        linear-gradient(135deg, rgba(4, 10, 18, 0.72), rgba(9, 21, 35, 0.92));
+      margin-bottom: 18px;
+    }
+    .graph-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black 20%, transparent 88%);
+      pointer-events: none;
+    }
+    .graph-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .graph-node {
+      position: absolute;
+      width: 200px;
+      min-height: 112px;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--line);
+      background: rgba(8, 18, 30, 0.94);
+      border-radius: 16px;
+      padding: 12px;
+      z-index: 2;
+      cursor: pointer;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.32);
+      transition: transform 0.14s ease, border-color 0.14s ease, opacity 0.14s ease, background 0.14s ease;
+    }
+    .graph-node:hover { transform: translate(-50%, -50%) scale(1.035); border-color: rgba(66, 215, 255, 0.86); }
+    .graph-node.focused { border-color: var(--gold); background: rgba(243, 198, 92, 0.13); box-shadow: 0 0 0 2px rgba(243, 198, 92, 0.18), 0 18px 44px rgba(0,0,0,0.42); }
+    .graph-node.trace { border-color: rgba(243, 198, 92, 0.64); }
+    .graph-node.dimmed { opacity: 0.23; }
+    .graph-node.hidden-by-filter { display: none; }
+    .graph-node h3 { font-size: 0.95rem; margin-bottom: 6px; }
+    .graph-node .meta { font-size: 0.72rem; }
+    .graph-node .status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--muted); }
+    .graph-node .status-dot.verified { background: var(--green); }
+    .graph-node .status-dot.partial, .graph-node .status-dot.hypothesis, .graph-node .status-dot.proposed { background: var(--orange); }
+    .graph-node .status-dot.warning, .graph-node .status-dot.risky { background: var(--red); }
+    .lane-label { position: absolute; z-index: 1; top: 10px; color: rgba(238,246,255,0.42); font-weight: 900; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; transform: translateX(-50%); pointer-events: none; }
+    .edge-line { stroke: rgba(159, 180, 204, 0.34); stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .edge-line.trace { stroke: rgba(243, 198, 92, 0.94); stroke-width: 3; marker-end: url(#arrowTrace); }
+    .edge-line.selected { stroke: rgba(66, 215, 255, 0.95); stroke-width: 4; }
+    .edge-line.dimmed { opacity: 0.16; }
+    .edge-label { fill: rgba(238,246,255,0.76); font-size: 11px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,0.9); pointer-events: none; }
+    .edge-label.trace { fill: #ffe7a3; }
+
+    .node-list, .edge-list { display: grid; gap: 10px; }
+    .node-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .node-card, .edge-card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.035);
+      border-radius: 14px;
+      padding: 13px;
+      cursor: pointer;
+    }
+    .node-card.focused, .node-card.trace, .edge-card.selected { border-color: var(--gold); background: rgba(243, 198, 92, 0.10); }
+    .node-card.hidden-by-filter, .edge-card.hidden-by-filter { display: none; }
+    .node-card:hover, .edge-card:hover { border-color: rgba(66, 215, 255, 0.72); }
+    .meta { color: var(--muted); font-size: 0.84rem; word-break: break-word; }
+    .warning { margin-top: 9px; border-left: 3px solid var(--gold); padding: 8px 10px; background: rgba(243, 198, 92, 0.08); color: #ffe7a3; border-radius: 8px; font-size: 0.86rem; }
+
+    aside .panel { margin-bottom: 14px; }
+    .detail-row { border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 0; }
+    .detail-row:first-of-type { border-top: 0; }
+    .detail-row b { display: block; color: var(--cyan); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    pre { white-space: pre-wrap; word-break: break-word; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; max-height: 320px; overflow: auto; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    body.print-mode header, body.print-mode .toolbar, body.print-mode aside { display: none; }
+    body.print-mode main { max-width: none; }
+    body.print-mode .shell { grid-template-columns: 1fr; }
+    body.print-mode .graph-shell { min-height: 820px; page-break-inside: avoid; }
+    @media print {
+      body { background: white; color: #111; }
+      header, .toolbar, aside { display: none !important; }
+      main { max-width: none; padding: 0; }
+      .shell { grid-template-columns: 1fr; }
+      .panel, .graph-shell { box-shadow: none; border-color: #999; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AQLEN <span>Receipt Graph</span> Renderer v0.4</h1>
+    <p class="subtitle">Local-first graph inspection with evidence/status polish, edge detail, focus presets, and print-ready view. This renderer visualizes ledger receipts; it does not increase the scientific confidence of the underlying payload.</p>
+    <div class="boundary-banner" id="boundaryBanner">Claim boundary will appear here after loading a payload.</div>
+  </header>
+
+  <main>
+    <section class="toolbar panel">
+      <button id="loadDemo" class="span-2">Load demo export</button>
+      <label class="control-label span-3">Load dashboard JSON
+        <input id="fileInput" type="file" accept="application/json,.json" />
+      </label>
+      <label class="control-label span-3">Search
+        <input id="searchBox" type="search" placeholder="node, edge, warning, status..." />
+      </label>
+      <label class="control-label span-2">Node group
+        <select id="groupFilter"><option value="all">All groups</option></select>
+      </label>
+      <label class="control-label span-2">Edge type
+        <select id="edgeFilter"><option value="all">All edge types</option></select>
+      </label>
+      <label class="control-label span-2">Layout
+        <select id="layoutMode">
+          <option value="pipeline">Pipeline lanes</option>
+          <option value="radial">Radial trace</option>
+          <option value="compact">Compact evidence view</option>
+        </select>
+      </label>
+      <label class="control-label span-2">Depth
+        <input id="depthInput" type="number" min="1" max="12" value="6" />
+      </label>
+      <label class="control-label span-2">Preset
+        <select id="presetSelect"><option value="none">No preset</option></select>
+      </label>
+      <button id="traceOnly" class="secondary span-2">Trace only: off</button>
+      <button id="exportTrace" class="secondary span-2">Export focused trace</button>
+      <button id="printMode" class="warning-btn span-2">Print mode</button>
+    </section>
+
+    <section class="summary" id="summaryCards"></section>
+
+    <section class="shell">
+      <section class="panel">
+        <h2>Graph canvas</h2>
+        <p class="meta">Click a node to focus. Click an edge card to inspect its note/type. Toggle trace-only for a clean audit path.</p>
+        <div class="legend" id="legend"></div>
+        <div class="graph-shell" id="graphShell">
+          <svg class="graph-svg" id="graphSvg" viewBox="0 0 1200 680" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div id="graphLayer"></div>
+        </div>
+        <h2>Node cards</h2>
+        <div class="node-list" id="nodeList"></div>
+        <h2 style="margin-top:18px;">Edge cards</h2>
+        <div class="edge-list" id="edgeList"></div>
+      </section>
+
+      <aside>
+        <section class="panel">
+          <h2>Selected node</h2>
+          <div id="selectedNodeDetail" class="meta">Load a payload and select a node.</div>
+        </section>
+        <section class="panel">
+          <h2>Selected edge</h2>
+          <div id="selectedEdgeDetail" class="meta">Select an edge card to inspect the relationship.</div>
+        </section>
+        <section class="panel">
+          <h2>Source/status legend</h2>
+          <div id="statusLegend"></div>
+        </section>
+        <section class="panel">
+          <h2>Boundary warnings</h2>
+          <div id="boundaryCards" class="edge-list"></div>
+        </section>
+        <section class="panel">
+          <h2>Focused trace JSON</h2>
+          <pre id="traceJson">{}</pre>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      payload: null,
+      nodes: [],
+      edges: [],
+      focusId: null,
+      traceOnly: false,
+      selectedEdgeKey: null,
+      trace: { upstream: [], downstream: [], node_ids: [] }
+    };
+
+    const familyOrder = ["evidence", "device", "error", "calibration", "score", "architecture", "other"];
+    const familyLabels = {
+      evidence: "Evidence",
+      device: "Device",
+      error: "Error",
+      calibration: "Calibration",
+      score: "Score",
+      architecture: "Architecture",
+      other: "Other"
+    };
+
+    const el = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+    const norm = (value) => String(value ?? "").toLowerCase();
+    const nodeId = (node) => node.id || node.node_id || node.key || node.label;
+    const edgeFrom = (edge) => edge.from || edge.source || edge.source_id;
+    const edgeTo = (edge) => edge.to || edge.target || edge.target_id;
+    const edgeKey = (edge) => `${edgeFrom(edge)}->${edgeTo(edge)}:${edge.type || edge.relation || "edge"}`;
+
+    function groupFor(node) {
+      const raw = norm(node.group || node.family || node.type || "other");
+      if (raw.includes("evidence")) return "evidence";
+      if (raw.includes("qubit") || raw.includes("device")) return "device";
+      if (raw.includes("noise") || raw.includes("error")) return "error";
+      if (raw.includes("calibration")) return "calibration";
+      if (raw.includes("score") || raw.includes("readiness")) return "score";
+      if (raw.includes("architecture") || raw.includes("module")) return "architecture";
+      return "other";
+    }
+
+    function statusFor(node) {
+      return norm(node.status || node.source_status || node.evidence_status || node.claim_status || "unspecified").replace(/[^a-z0-9_-]+/g, "-");
+    }
+
+    function searchableNode(node) {
+      return norm([nodeId(node), node.label, node.type, node.group, node.status, node.source_status, node.claim_boundary, node.warning, JSON.stringify(node.metadata || {})].join(" "));
+    }
+
+    function searchableEdge(edge) {
+      return norm([edgeFrom(edge), edgeTo(edge), edge.type, edge.relation, edge.note, edge.claim_boundary, edge.status, JSON.stringify(edge.metadata || {})].join(" "));
+    }
+
+    async function loadDemo() {
+      const response = await fetch("receipt_graph_dashboard_demo.json");
+      if (!response.ok) throw new Error("Could not load dashboard/receipt_graph_dashboard_demo.json. Run a local server from the repo root.");
+      loadPayload(await response.json());
+    }
+
+    function loadPayload(payload) {
+      state.payload = payload;
+      state.nodes = payload.nodes || [];
+      state.edges = payload.edges || [];
+      state.focusId = (payload.focus_trace && payload.focus_trace.focus_id) || (state.nodes[0] && nodeId(state.nodes[0])) || null;
+      state.selectedEdgeKey = null;
+      populateFilters();
+      populatePresets();
+      render();
+    }
+
+    function populateFilters() {
+      const groups = [...new Set(state.nodes.map(groupFor))].sort((a,b) => familyOrder.indexOf(a) - familyOrder.indexOf(b));
+      el("groupFilter").innerHTML = '<option value="all">All groups</option>' + groups.map(g => `<option value="${esc(g)}">${esc(familyLabels[g] || g)}</option>`).join("");
+      const edgeTypes = [...new Set(state.edges.map(e => e.type || e.relation || "edge"))].sort();
+      el("edgeFilter").innerHTML = '<option value="all">All edge types</option>' + edgeTypes.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
+    }
+
+    function populatePresets() {
+      const byGroup = Object.fromEntries(state.nodes.map(n => [groupFor(n), nodeId(n)]));
+      const options = [
+        ["none", "No preset"],
+        [byGroup.score || "", "Focus readiness score"],
+        [byGroup.evidence || "", "Focus first evidence"],
+        [byGroup.error || "", "Focus first error"],
+        [byGroup.calibration || "", "Focus first calibration"]
+      ].filter(([value], idx) => idx === 0 || value);
+      el("presetSelect").innerHTML = options.map(([value,label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("");
+    }
+
+    function computeTrace(focusId, depth) {
+      if (!focusId) return { upstream: [], downstream: [], node_ids: [] };
+      const incoming = new Map();
+      const outgoing = new Map();
+      state.edges.forEach(e => {
+        const from = edgeFrom(e), to = edgeTo(e);
+        if (!incoming.has(to)) incoming.set(to, []);
+        if (!outgoing.has(from)) outgoing.set(from, []);
+        incoming.get(to).push(e);
+        outgoing.get(from).push(e);
+      });
+      const walk = (start, map) => {
+        const seen = new Set([start]);
+        const edges = [];
+        let frontier = [start];
+        for (let d = 0; d < depth; d++) {
+          const next = [];
+          frontier.forEach(id => {
+            (map.get(id) || []).forEach(e => {
+              const other = map === incoming ? edgeFrom(e) : edgeTo(e);
+              edges.push(edgeKey(e));
+              if (!seen.has(other)) { seen.add(other); next.push(other); }
+            });
+          });
+          frontier = next;
+          if (!frontier.length) break;
+        }
+        seen.delete(start);
+        return { nodes: [...seen], edges: [...new Set(edges)] };
+      };
+      const up = walk(focusId, incoming);
+      const down = walk(focusId, outgoing);
+      return {
+        upstream: up.nodes,
+        downstream: down.nodes,
+        upstream_edges: up.edges,
+        downstream_edges: down.edges,
+        node_ids: [...new Set([focusId, ...up.nodes, ...down.nodes])],
+        edge_keys: [...new Set([...up.edges, ...down.edges])]
+      };
+    }
+
+    function filteredNodeIds() {
+      const query = norm(el("searchBox").value);
+      const group = el("groupFilter").value;
+      const edgeType = el("edgeFilter").value;
+      const edgeNodeIds = new Set();
+      state.edges.forEach(e => {
+        const typeMatch = edgeType === "all" || (e.type || e.relation || "edge") === edgeType;
+        const queryMatch = !query || searchableEdge(e).includes(query);
+        if (typeMatch && queryMatch) { edgeNodeIds.add(edgeFrom(e)); edgeNodeIds.add(edgeTo(e)); }
+      });
+      return new Set(state.nodes.filter(n => {
+        const id = nodeId(n);
+        const groupMatch = group === "all" || groupFor(n) === group;
+        const queryMatch = !query || searchableNode(n).includes(query) || edgeNodeIds.has(id);
+        const traceMatch = !state.traceOnly || state.trace.node_ids.includes(id);
+        return groupMatch && queryMatch && traceMatch;
+      }).map(nodeId));
+    }
+
+    function filteredEdges(visibleIds) {
+      const query = norm(el("searchBox").value);
+      const edgeType = el("edgeFilter").value;
+      return state.edges.filter(e => {
+        const typeMatch = edgeType === "all" || (e.type || e.relation || "edge") === edgeType;
+        const queryMatch = !query || searchableEdge(e).includes(query) || searchableNode(findNode(edgeFrom(e)) || {}).includes(query) || searchableNode(findNode(edgeTo(e)) || {}).includes(query);
+        const visibleMatch = visibleIds.has(edgeFrom(e)) && visibleIds.has(edgeTo(e));
+        const traceMatch = !state.traceOnly || state.trace.edge_keys.includes(edgeKey(e));
+        return typeMatch && queryMatch && visibleMatch && traceMatch;
+      });
+    }
+
+    function findNode(id) { return state.nodes.find(n => nodeId(n) === id); }
+
+    function computePositions(visibleIds) {
+      const mode = el("layoutMode").value;
+      const visibleNodes = state.nodes.filter(n => visibleIds.has(nodeId(n)));
+      const positions = new Map();
+      if (mode === "radial") {
+        const cx = 600, cy = 340;
+        positions.set(state.focusId, { x: cx, y: cy });
+        const others = visibleNodes.filter(n => nodeId(n) !== state.focusId);
+        const radius = 235;
+        others.forEach((n, i) => {
+          const angle = (Math.PI * 2 * i / Math.max(others.length, 1)) - Math.PI / 2;
+          positions.set(nodeId(n), { x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius });
+        });
+      } else {
+        const groups = mode === "compact" ? ["evidence", "device", "error", "calibration", "score", "architecture", "other"] : familyOrder;
+        const xMap = Object.fromEntries(groups.map((g, i) => [g, 90 + i * (1020 / Math.max(groups.length - 1, 1))]));
+        groups.forEach(g => {
+          const nodes = visibleNodes.filter(n => groupFor(n) === g);
+          nodes.forEach((n, i) => {
+            const spread = Math.max(nodes.length - 1, 1);
+            const y = 130 + (i * (470 / spread));
+            positions.set(nodeId(n), { x: xMap[g] || 1100, y });
+          });
+        });
+      }
+      return positions;
+    }
+
+    function render() {
+      if (!state.payload) return;
+      const depth = Number(el("depthInput").value || 6);
+      state.trace = computeTrace(state.focusId, depth);
+      const visibleIds = filteredNodeIds();
+      const edges = filteredEdges(visibleIds);
+      const positions = computePositions(visibleIds);
+      renderHeader();
+      renderSummary();
+      renderLegend();
+      renderGraph(visibleIds, edges, positions);
+      renderCards(visibleIds, edges);
+      renderDetails();
+      renderTraceJson();
+    }
+
+    function renderHeader() {
+      el("boundaryBanner").textContent = state.payload.global_claim_boundary || "Local renderer only: the UI does not raise claim confidence beyond the payload.";
+    }
+
+    function renderSummary() {
+      const sourceStatuses = new Set(state.nodes.map(statusFor));
+      const cards = [
+        [state.nodes.length, "Nodes"],
+        [state.edges.length, "Edges"],
+        [state.trace.node_ids.length, "Focused trace nodes"],
+        [sourceStatuses.size, "Source/status classes"],
+        [(state.payload.boundary_cards || []).length, "Boundary cards"]
+      ];
+      el("summaryCards").innerHTML = cards.map(([value,label]) => `<div class="metric"><b>${esc(value)}</b><span>${esc(label)}</span></div>`).join("");
+    }
+
+    function renderLegend() {
+      const groups = [...new Set(state.nodes.map(groupFor))].sort((a,b) => familyOrder.indexOf(a) - familyOrder.indexOf(b));
+      el("legend").innerHTML = groups.map(g => `<span class="badge ${esc(g)}">${esc(familyLabels[g] || g)}</span>`).join("") + '<span class="pill focus">focused</span><span class="pill trace">trace</span><span class="pill boundary">claim boundary visible</span>';
+      const statuses = [...new Set(state.nodes.map(statusFor))].sort();
+      el("statusLegend").innerHTML = statuses.map(s => `<span class="pill"><span class="status-dot ${esc(s)}"></span>${esc(s)}</span>`).join("") || '<p class="meta">No statuses detected.</p>';
+    }
+
+    function renderGraph(visibleIds, edges, positions) {
+      const layer = el("graphLayer");
+      const svg = el("graphSvg");
+      const mode = el("layoutMode").value;
+      const visibleNodes = state.nodes.filter(n => visibleIds.has(nodeId(n)));
+      layer.innerHTML = "";
+      svg.innerHTML = '<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="rgba(159,180,204,0.62)" /></marker><marker id="arrowTrace" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="rgba(243,198,92,0.94)" /></marker></defs>';
+      if (mode !== "radial") {
+        familyOrder.forEach(g => {
+          const nodes = visibleNodes.filter(n => groupFor(n) === g);
+          if (!nodes.length) return;
+          const p = positions.get(nodeId(nodes[0]));
+          layer.insertAdjacentHTML("beforeend", `<div class="lane-label" style="left:${p.x/12}%;">${esc(familyLabels[g] || g)}</div>`);
+        });
+      }
+      edges.forEach(e => {
+        const a = positions.get(edgeFrom(e));
+        const b = positions.get(edgeTo(e));
+        if (!a || !b) return;
+        const key = edgeKey(e);
+        const traceClass = state.trace.edge_keys.includes(key) ? "trace" : "";
+        const selectedClass = state.selectedEdgeKey === key ? "selected" : "";
+        svg.insertAdjacentHTML("beforeend", `<path class="edge-line ${traceClass} ${selectedClass}" d="M ${a.x} ${a.y} C ${(a.x+b.x)/2} ${a.y}, ${(a.x+b.x)/2} ${b.y}, ${b.x} ${b.y}" />`);
+        const midX = (a.x + b.x) / 2;
+        const midY = (a.y + b.y) / 2;
+        svg.insertAdjacentHTML("beforeend", `<text class="edge-label ${traceClass}" x="${midX}" y="${midY - 8}" text-anchor="middle">${esc(e.type || e.relation || "edge")}</text>`);
+      });
+      visibleNodes.forEach(n => {
+        const id = nodeId(n);
+        const p = positions.get(id) || { x: 600, y: 340 };
+        const focused = id === state.focusId ? "focused" : "";
+        const trace = state.trace.node_ids.includes(id) ? "trace" : "dimmed";
+        const group = groupFor(n);
+        layer.insertAdjacentHTML("beforeend", `<article class="graph-node ${focused} ${trace}" data-node-id="${esc(id)}" style="left:${p.x/12}%;top:${p.y/6.8}%"><span class="badge ${esc(group)}">${esc(group)}</span><h3>${esc(n.label || id)}</h3><div class="meta"><span class="status-dot ${esc(statusFor(n))}"></span> ${esc(n.status || n.source_status || n.claim_status || "status unspecified")}</div>${n.claim_boundary ? `<div class="warning">${esc(n.claim_boundary)}</div>` : ""}</article>`);
+      });
+      layer.querySelectorAll(".graph-node").forEach(node => node.addEventListener("click", () => setFocus(node.dataset.nodeId)));
+    }
+
+    function renderCards(visibleIds, edges) {
+      el("nodeList").innerHTML = state.nodes.filter(n => visibleIds.has(nodeId(n))).map(n => nodeCard(n)).join("");
+      el("nodeList").querySelectorAll(".node-card").forEach(node => node.addEventListener("click", () => setFocus(node.dataset.nodeId)));
+      el("edgeList").innerHTML = edges.map(e => edgeCard(e)).join("");
+      el("edgeList").querySelectorAll(".edge-card").forEach(card => card.addEventListener("click", () => { state.selectedEdgeKey = card.dataset.edgeKey; render(); }));
+    }
+
+    function nodeCard(n) {
+      const id = nodeId(n);
+      const group = groupFor(n);
+      const focused = id === state.focusId ? "focused" : "";
+      const trace = state.trace.node_ids.includes(id) ? "trace" : "";
+      return `<article class="node-card ${focused} ${trace}" data-node-id="${esc(id)}"><span class="badge ${esc(group)}">${esc(group)}</span><span class="pill">${esc(n.type || "node")}</span><h3>${esc(n.label || id)}</h3><p class="meta">${esc(id)}</p><p class="meta"><span class="status-dot ${esc(statusFor(n))}"></span> ${esc(n.status || n.source_status || n.claim_status || "status unspecified")}</p>${n.claim_boundary ? `<div class="warning">${esc(n.claim_boundary)}</div>` : ""}</article>`;
+    }
+
+    function edgeCard(e) {
+      const key = edgeKey(e);
+      const selected = key === state.selectedEdgeKey ? "selected" : "";
+      const trace = state.trace.edge_keys.includes(key) ? "trace" : "";
+      return `<article class="edge-card ${selected} ${trace}" data-edge-key="${esc(key)}"><span class="pill ${trace ? "trace" : ""}">${esc(e.type || e.relation || "edge")}</span><h3>${esc(edgeFrom(e))} → ${esc(edgeTo(e))}</h3><p class="meta">${esc(e.note || "No edge note supplied.")}</p>${e.claim_boundary ? `<div class="warning">${esc(e.claim_boundary)}</div>` : ""}</article>`;
+    }
+
+    function renderDetails() {
+      const node = findNode(state.focusId);
+      el("selectedNodeDetail").innerHTML = node ? detailHtml(node, "node") : "No node selected.";
+      const edge = state.edges.find(e => edgeKey(e) === state.selectedEdgeKey);
+      el("selectedEdgeDetail").innerHTML = edge ? detailHtml(edge, "edge") : "Select an edge card to inspect the relationship.";
+      const cards = state.payload.boundary_cards || [];
+      const nodeWarnings = state.nodes.filter(n => n.claim_boundary).map(n => ({ title: n.label || nodeId(n), body: n.claim_boundary }));
+      const merged = [...cards, ...nodeWarnings];
+      el("boundaryCards").innerHTML = merged.length ? merged.map(c => `<div class="edge-card"><span class="pill boundary">boundary</span><h3>${esc(c.title || c.label || "Boundary")}</h3><p class="meta">${esc(c.body || c.warning || c.text || JSON.stringify(c))}</p></div>`).join("") : '<p class="meta">No boundary cards detected.</p>';
+    }
+
+    function detailHtml(obj, kind) {
+      const rows = Object.entries(obj).map(([k,v]) => `<div class="detail-row"><b>${esc(k)}</b><div>${esc(typeof v === "object" ? JSON.stringify(v, null, 2) : v)}</div></div>`).join("");
+      return `<span class="pill focus">selected ${kind}</span>${rows}`;
+    }
+
+    function renderTraceJson() {
+      const exportPayload = {
+        renderer_version: "0.4",
+        layout: el("layoutMode").value,
+        focus_id: state.focusId,
+        selected_edge: state.selectedEdgeKey,
+        depth: Number(el("depthInput").value || 6),
+        trace: state.trace,
+        claim_boundary: state.payload.global_claim_boundary || null
+      };
+      el("traceJson").textContent = JSON.stringify(exportPayload, null, 2);
+    }
+
+    function setFocus(id) {
+      state.focusId = id;
+      state.selectedEdgeKey = null;
+      el("presetSelect").value = "none";
+      render();
+    }
+
+    function downloadJson(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    el("loadDemo").addEventListener("click", () => loadDemo().catch(err => alert(err.message)));
+    el("fileInput").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      loadPayload(JSON.parse(await file.text()));
+    });
+    ["searchBox", "groupFilter", "edgeFilter", "layoutMode", "depthInput"].forEach(id => el(id).addEventListener("input", render));
+    el("presetSelect").addEventListener("change", (event) => { if (event.target.value && event.target.value !== "none") setFocus(event.target.value); });
+    el("traceOnly").addEventListener("click", () => { state.traceOnly = !state.traceOnly; el("traceOnly").textContent = `Trace only: ${state.traceOnly ? "on" : "off"}`; render(); });
+    el("exportTrace").addEventListener("click", () => downloadJson(`aqlen-focused-trace-${state.focusId || "none"}.json`, JSON.parse(el("traceJson").textContent || "{}")));
+    el("printMode").addEventListener("click", () => { document.body.classList.toggle("print-mode"); el("printMode").textContent = document.body.classList.contains("print-mode") ? "Exit print mode" : "Print mode"; });
+
+    render();
+  </script>
+</body>
+</html>
