@@ -1,0 +1,38 @@
+[
+  {
+    "anchor_id": "AQLEN-EA-001",
+    "title": "Industry-compatible silicon spin-qubit unit cells exceeding 99% fidelity",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2025,
+    "url": "https://www.nature.com/articles/s41586-025-09531-9",
+    "platform": "silicon spin qubits; 300-mm foundry unit cells",
+    "claims": ["300-mm foundry unit cells exceeded 99% operation fidelity in reported results."],
+    "aqlen_modules": ["Qubit Provenance Ledger", "Manufacturing Feedback Loop", "Readiness Scorer"],
+    "claim_boundary": "Do not claim mass production is solved.",
+    "confidence": "very_high"
+  },
+  {
+    "anchor_id": "AQLEN-EA-002",
+    "title": "Probing single electrons across 300-mm spin qubit wafers",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2024,
+    "url": "https://www.nature.com/articles/s41586-024-07275-6",
+    "platform": "wafer-scale cryogenic probing",
+    "claims": ["Cryogenic wafer probing supports high-volume device measurement and variation mapping."],
+    "aqlen_modules": ["Qubit Provenance Ledger", "Manufacturing Feedback Loop"],
+    "claim_boundary": "Measurement breakthrough, not a full computer deployment.",
+    "confidence": "very_high"
+  },
+  {
+    "anchor_id": "AQLEN-EA-003",
+    "title": "Assessment of high-fidelity two-qubit gate errors in silicon quantum dots",
+    "source_type": "peer_reviewed_paper",
+    "publication_year": 2024,
+    "url": "https://www.nature.com/articles/s41567-024-02614-w",
+    "platform": "silicon quantum dots",
+    "claims": ["Errors in silicon spin-qubit gates can be analyzed by physical origin."],
+    "aqlen_modules": ["Noise-Origin Classifier", "Calibration Drift Ledger"],
+    "claim_boundary": "Error provenance support, not proof that all errors are solved.",
+    "confidence": "very_high"
+  }
+]
