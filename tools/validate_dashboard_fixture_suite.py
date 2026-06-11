@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
@@ -23,6 +24,8 @@ if str(TOOLS) not in sys.path:
 
 from validate_dashboard_payload import load_json, validate_payload  # noqa: E402
 
+SUITE_VERSION = "dashboard_fixture_suite_v0_7"
+SCHEMA_REF = "schemas/dashboard_payload.schema.json"
 
 DEFAULT_POSITIVE_FIXTURES = [
     "dashboard/receipt_graph_dashboard_demo.json",
@@ -60,6 +63,10 @@ DEFAULT_WARNING_FIXTURES = {
 }
 
 
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
 def _validate(path: Path) -> Dict[str, Any]:
     payload = load_json(path)
     return validate_payload(payload)
@@ -70,8 +77,32 @@ def _contains_all(report_items: List[str], expected: List[str]) -> bool:
     return all(item in haystack for item in expected)
 
 
+def _bucket_summary(bucket: Dict[str, Dict[str, Any]]) -> Dict[str, int]:
+    total = len(bucket)
+    passed = sum(1 for item in bucket.values() if item.get("passed"))
+    return {"total": total, "passed": passed, "failed": total - passed}
+
+
+def _attach_summary(results: Dict[str, Any]) -> None:
+    results["summary"] = {
+        "positive": _bucket_summary(results["positive"]),
+        "negative": _bucket_summary(results["negative"]),
+        "warning": _bucket_summary(results["warning"]),
+    }
+    totals = results["summary"].values()
+    results["summary"]["overall"] = {
+        "total": sum(item["total"] for item in totals),
+        "passed": sum(item["passed"] for item in totals),
+        "failed": sum(item["failed"] for item in totals),
+    }
+
+
 def run_suite(root: Path) -> Dict[str, Any]:
     results: Dict[str, Any] = {
+        "suite_version": SUITE_VERSION,
+        "schema_ref": SCHEMA_REF,
+        "generated_at": _utc_now(),
+        "root": str(root),
         "ok": True,
         "positive": {},
         "negative": {},
@@ -107,24 +138,43 @@ def run_suite(root: Path) -> Dict[str, Any]:
         }
         results["ok"] = results["ok"] and warned_as_expected
 
+    _attach_summary(results)
     return results
+
+
+def write_report(path: Path, result: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run AQLEN dashboard validator fixture suite.")
     parser.add_argument("--root", default=str(ROOT), help="Repository root path")
     parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON report")
+    parser.add_argument(
+        "--report-out",
+        help="Optional path where the machine-readable fixture-suite report should be written",
+    )
     args = parser.parse_args(argv)
 
     result = run_suite(Path(args.root).resolve())
+
+    if args.report_out:
+        write_report(Path(args.report_out), result)
 
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))
     else:
         status = "PASS" if result["ok"] else "FAIL"
         print(f"{status} dashboard fixture suite")
+        print(
+            "Summary: "
+            f"{result['summary']['overall']['passed']}/"
+            f"{result['summary']['overall']['total']} checks passed"
+        )
         for lane in ("positive", "negative", "warning"):
-            print(f"\n[{lane}]")
+            lane_summary = result["summary"][lane]
+            print(f"\n[{lane}] {lane_summary['passed']}/{lane_summary['total']} passed")
             for rel, item in result[lane].items():
                 marker = "PASS" if item["passed"] else "FAIL"
                 print(f"  {marker} {rel}")
