@@ -1,0 +1,26 @@
+{
+  "dashboard_payload_version": "0.5-warning",
+  "graph_id": "aqlen.warning.summary_count_drift",
+  "graph_version": "0.1",
+  "global_claim_boundary": "Warning fixture: this payload should remain valid but report summary-count drift warnings.",
+  "nodes": [
+    {
+      "id": "score-demo-001",
+      "type": "readiness_score",
+      "label": "Demo readiness score",
+      "group": "score",
+      "status": "demo"
+    }
+  ],
+  "edges": [],
+  "summary_cards": {
+    "node_count": 99,
+    "edge_count": 99
+  },
+  "boundary_cards": [],
+  "focus_trace": {
+    "focus_id": "score-demo-001",
+    "upstream": [],
+    "downstream": []
+  }
+}
