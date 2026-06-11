@@ -17,6 +17,7 @@
       --green: #63d99a;
       --red: #ff7a7a;
       --purple: #b38cff;
+      --orange: #ffb86b;
     }
 
     * { box-sizing: border-box; }
@@ -31,17 +32,17 @@
     header {
       padding: 32px 24px 18px;
       border-bottom: 1px solid var(--line);
-      background: rgba(5, 12, 23, 0.68);
+      background: rgba(5, 12, 23, 0.76);
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
-      z-index: 2;
+      z-index: 4;
     }
 
     h1, h2, h3, p { margin-top: 0; }
     h1 { font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -0.04em; margin-bottom: 6px; }
     h1 span { color: var(--gold); }
-    .subtitle { color: var(--muted); max-width: 920px; margin: 0; }
+    .subtitle { color: var(--muted); max-width: 960px; margin: 0; }
     .boundary-banner {
       margin-top: 18px;
       padding: 14px 16px;
@@ -51,10 +52,10 @@
       color: #ffe7a3;
     }
 
-    main { padding: 24px; max-width: 1440px; margin: 0 auto; }
+    main { padding: 24px; max-width: 1560px; margin: 0 auto; }
     .toolbar {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
       gap: 12px;
       align-items: center;
       margin-bottom: 22px;
@@ -66,27 +67,39 @@
       border: 0;
       border-radius: 10px;
       padding: 10px 14px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
     }
+    button.secondary { background: linear-gradient(135deg, #293a56, #374d70); }
+    button.warning-btn { background: linear-gradient(135deg, #6a4620, #a76a28); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
 
     input[type="file"] { color: var(--muted); }
-    select {
+    input[type="search"], input[type="number"], select {
       background: var(--panel);
       color: var(--text);
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 10px 12px;
+      min-width: 0;
     }
+
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    @media (max-width: 1120px) {
+      .toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .span-2, .span-3, .span-4 { grid-column: span 1; }
+    }
+    @media (max-width: 720px) { .toolbar { grid-template-columns: 1fr; } }
 
     .grid {
       display: grid;
-      grid-template-columns: 1fr 360px;
+      grid-template-columns: minmax(0, 1fr) 390px;
       gap: 18px;
       align-items: start;
     }
-
-    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1050px) { .grid { grid-template-columns: 1fr; } }
 
     .panel {
       background: linear-gradient(180deg, rgba(16, 29, 46, 0.96), rgba(8, 15, 25, 0.96));
@@ -98,18 +111,18 @@
 
     .summary {
       display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
       gap: 12px;
       margin-bottom: 18px;
     }
-    @media (max-width: 720px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) { .summary { grid-template-columns: repeat(2, 1fr); } }
     .metric {
       background: rgba(66, 215, 255, 0.08);
       border: 1px solid rgba(66, 215, 255, 0.18);
       border-radius: 14px;
       padding: 14px;
     }
-    .metric b { display: block; font-size: 1.5rem; color: var(--cyan); }
+    .metric b { display: block; font-size: 1.45rem; color: var(--cyan); }
     .metric span { color: var(--muted); font-size: 0.85rem; }
 
     .node-list {
@@ -124,22 +137,25 @@
       border-radius: 14px;
       padding: 14px;
       transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+      cursor: pointer;
+      min-height: 150px;
     }
     .node-card.focused, .node-card.trace {
       border-color: var(--gold);
       background: rgba(243, 198, 92, 0.10);
     }
+    .node-card.hidden-by-filter { display: none; }
     .node-card:hover { transform: translateY(-2px); border-color: rgba(66, 215, 255, 0.7); }
 
-    .badge {
+    .badge, .pill {
       display: inline-block;
       padding: 4px 8px;
       border-radius: 999px;
       font-size: 0.75rem;
-      font-weight: 800;
+      font-weight: 900;
       color: #06101c;
       background: var(--cyan);
-      margin-bottom: 8px;
+      margin: 0 6px 8px 0;
     }
     .badge.evidence { background: var(--gold); }
     .badge.device { background: var(--green); }
@@ -147,6 +163,8 @@
     .badge.calibration { background: var(--cyan); }
     .badge.score { background: var(--purple); }
     .badge.architecture { background: #b8c6d8; }
+    .pill { color: var(--text); background: rgba(255,255,255,0.10); border: 1px solid var(--line); }
+    .pill.trace { border-color: var(--gold); color: #ffe7a3; }
 
     .node-card h3 { margin-bottom: 6px; font-size: 1.05rem; }
     .meta { color: var(--muted); font-size: 0.84rem; word-break: break-word; }
@@ -171,7 +189,8 @@
       border-color: var(--gold);
       background: rgba(243, 198, 92, 0.08);
     }
-    .edge-path { color: var(--cyan); font-weight: 800; }
+    .edge-card.hidden-by-filter { display: none; }
+    .edge-path { color: var(--cyan); font-weight: 900; }
     .edge-note { color: var(--muted); margin-top: 5px; font-size: 0.9rem; }
 
     .side-stack { display: flex; flex-direction: column; gap: 18px; }
@@ -184,11 +203,53 @@
     }
     .boundary-card b { color: var(--gold); }
 
+    .detail-block {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .graph-map {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .map-column {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.025);
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .map-column h3 { font-size: 0.9rem; color: var(--muted); margin-bottom: 8px; }
+    .map-node {
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(66, 215, 255, 0.18);
+      background: rgba(66, 215, 255, 0.06);
+      margin-bottom: 8px;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+    .map-node.focus { border-color: var(--gold); background: rgba(243, 198, 92, 0.12); color: #ffe7a3; }
+
     textarea {
       width: 100%; min-height: 240px; resize: vertical;
       background: #050b14; color: var(--text);
       border: 1px solid var(--line); border-radius: 12px;
       padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    pre {
+      max-height: 360px;
+      overflow: auto;
+      background: #050b14;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: #d7e9ff;
+      font-size: 0.82rem;
     }
     .small { color: var(--muted); font-size: 0.9rem; }
     .hidden { display: none; }
@@ -197,36 +258,53 @@
 <body>
   <header>
     <h1>AQLEN <span>Ω</span> Receipt Graph</h1>
-    <p class="subtitle">Static dashboard renderer for evidence anchors, qubit receipts, noise events, calibration receipts, readiness scores, and module paths.</p>
+    <p class="subtitle">Interactive local dashboard renderer for evidence anchors, qubit receipts, noise events, calibration receipts, readiness scores, and module paths.</p>
     <div id="globalBoundary" class="boundary-banner">Load a dashboard export to show the global claim boundary.</div>
   </header>
 
   <main>
     <div class="toolbar">
-      <button id="loadDefault">Load demo export</button>
-      <input id="fileInput" type="file" accept="application/json,.json" />
-      <select id="focusSelect" aria-label="Focus node"></select>
-      <button id="applyFocus">Apply focus</button>
-      <button id="showPaste">Paste JSON</button>
+      <button id="loadDefault" class="span-2">Load demo export</button>
+      <input id="fileInput" class="span-2" type="file" accept="application/json,.json" />
+      <input id="searchInput" class="span-3" type="search" placeholder="Search nodes, edges, notes..." />
+      <select id="groupFilter" aria-label="Group filter"></select>
+      <select id="edgeFilter" aria-label="Edge filter"></select>
+      <input id="depthInput" type="number" min="1" max="12" value="6" aria-label="Trace depth" />
+      <button id="resetFilters" class="secondary">Reset</button>
+      <button id="exportTrace" class="warning-btn span-2">Export focused trace</button>
+      <select id="focusSelect" class="span-3" aria-label="Focus node"></select>
+      <button id="applyFocus" class="span-2">Apply focus</button>
+      <button id="showPaste" class="secondary span-2">Paste JSON</button>
     </div>
 
     <section id="pastePanel" class="panel hidden" style="margin-bottom: 18px;">
       <h2>Paste dashboard export JSON</h2>
       <textarea id="jsonPaste" placeholder="Paste the output from tools/receipt_graph_dashboard_export.py here..."></textarea>
-      <p class="small">This renderer is local-only. Pasted data stays in your browser tab.</p>
+      <p class="small">This renderer is local-first. Pasted data stays in your browser tab.</p>
       <button id="renderPaste">Render pasted JSON</button>
     </section>
 
     <section class="summary" id="summaryCards"></section>
 
+    <section class="panel" style="margin-bottom: 18px;">
+      <h2>Trace Map</h2>
+      <p id="graphSummary" class="small"></p>
+      <div id="graphMap" class="graph-map"></div>
+    </section>
+
     <div class="grid">
       <section class="panel">
         <h2>Nodes</h2>
-        <p id="graphSummary" class="small"></p>
+        <p id="filterSummary" class="small"></p>
         <div class="node-list" id="nodeList"></div>
       </section>
 
       <aside class="side-stack">
+        <section class="panel">
+          <h2>Selected Node</h2>
+          <div id="selectedNodeDetails" class="small">Click a node to refocus the graph.</div>
+        </section>
+
         <section class="panel">
           <h2>Boundary Cards</h2>
           <div id="boundaryCards"></div>
@@ -249,79 +327,224 @@
   <script>
     let payload = null;
     let focusId = null;
+    let workingTrace = null;
 
     const groupClass = (group) => String(group || 'other').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
     const byId = (items) => Object.fromEntries((items || []).map((item) => [item.id, item]));
-    const traceNodeIds = (trace) => new Set([
-      trace?.focus_id,
-      ...(trace?.upstream || []).map((x) => x.node_id),
-      ...(trace?.downstream || []).map((x) => x.node_id)
-    ].filter(Boolean));
-    const traceEdgeIds = (trace) => new Set([
-      ...(trace?.upstream || []).map((x) => x.via_edge_id),
-      ...(trace?.downstream || []).map((x) => x.via_edge_id)
-    ].filter(Boolean));
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[char]));
+
+    function traceNodeIds(trace) {
+      return new Set([
+        trace?.focus_id,
+        ...(trace?.upstream || []).map((x) => x.node_id),
+        ...(trace?.downstream || []).map((x) => x.node_id)
+      ].filter(Boolean));
+    }
+
+    function traceEdgeIds(trace) {
+      return new Set([
+        ...(trace?.upstream || []).map((x) => x.via_edge_id),
+        ...(trace?.downstream || []).map((x) => x.via_edge_id)
+      ].filter(Boolean));
+    }
+
+    function getDepth() {
+      const raw = Number(document.getElementById('depthInput').value || 6);
+      return Math.max(1, Math.min(12, Number.isFinite(raw) ? raw : 6));
+    }
+
+    function computeTrace(data, selectedId, maxDepth = 6) {
+      if (!data || !selectedId) return { focus_id: null, upstream: [], downstream: [] };
+      const edges = data.edges || [];
+      const incoming = new Map();
+      const outgoing = new Map();
+      edges.forEach((edge) => {
+        if (!incoming.has(edge.target)) incoming.set(edge.target, []);
+        incoming.get(edge.target).push(edge);
+        if (!outgoing.has(edge.source)) outgoing.set(edge.source, []);
+        outgoing.get(edge.source).push(edge);
+      });
+      return {
+        focus_id: selectedId,
+        upstream: walkTrace(selectedId, incoming, 'source', maxDepth),
+        downstream: walkTrace(selectedId, outgoing, 'target', maxDepth)
+      };
+    }
+
+    function walkTrace(startId, edgeMap, nextKey, maxDepth) {
+      const rows = [];
+      const seenNodes = new Set([startId]);
+      const queue = [{ nodeId: startId, depth: 0 }];
+      while (queue.length) {
+        const current = queue.shift();
+        if (current.depth >= maxDepth) continue;
+        (edgeMap.get(current.nodeId) || []).forEach((edge) => {
+          const nextId = edge[nextKey];
+          const depth = current.depth + 1;
+          rows.push({ depth, node_id: nextId, via_edge_id: edge.id });
+          if (!seenNodes.has(nextId)) {
+            seenNodes.add(nextId);
+            queue.push({ nodeId: nextId, depth });
+          }
+        });
+      }
+      return rows;
+    }
 
     function render(data) {
-      payload = data;
-      focusId = data?.focus_trace?.focus_id || focusId || null;
-      document.getElementById('globalBoundary').textContent = data.global_claim_boundary || 'No global claim boundary provided.';
-      document.getElementById('graphSummary').textContent = `${data.graph_id || 'unknown graph'} — ${data.summary || ''}`;
+      payload = normalizePayload(data);
+      focusId = payload?.focus_trace?.focus_id || focusId || payload?.nodes?.[0]?.id || null;
+      workingTrace = computeTrace(payload, focusId, getDepth());
+      payload.focus_trace = workingTrace;
+      document.getElementById('globalBoundary').textContent = payload.global_claim_boundary || 'No global claim boundary provided.';
+      document.getElementById('graphSummary').textContent = `${payload.graph_id || 'unknown graph'} — ${payload.summary || ''}`;
+      renderControls(payload);
+      renderSummary(payload.summary_cards || {}, payload);
+      renderGraphMap(payload);
+      renderNodes(payload);
+      renderBoundaries(payload.boundary_cards || []);
+      renderEdges(payload);
+      renderTrace(payload);
+      renderSelectedNode(payload);
+      applyFilters();
+    }
+
+    function normalizePayload(data) {
+      const clone = JSON.parse(JSON.stringify(data || {}));
+      clone.nodes = clone.nodes || [];
+      clone.edges = (clone.edges || []).map((edge, index) => ({
+        id: edge.id || `${edge.source || 'unknown'}->${edge.target || 'unknown'}:${edge.type || index}`,
+        label: edge.label || edge.type || 'edge',
+        source: edge.source ?? edge.from,
+        target: edge.target ?? edge.to,
+        note: edge.note || '',
+        type: edge.type || edge.label || 'edge',
+        weight: edge.weight ?? null
+      }));
+      clone.boundary_cards = clone.boundary_cards || [];
+      clone.summary_cards = clone.summary_cards || deriveSummary(clone);
+      return clone;
+    }
+
+    function deriveSummary(data) {
+      const nodeTypes = {};
+      (data.nodes || []).forEach((node) => { nodeTypes[node.type || 'unknown'] = (nodeTypes[node.type || 'unknown'] || 0) + 1; });
+      return {
+        node_count: (data.nodes || []).length,
+        edge_count: (data.edges || []).length,
+        boundary_node_count: (data.nodes || []).filter((node) => node.claim_boundary || (node.warnings || []).length).length,
+        node_types: nodeTypes
+      };
+    }
+
+    function renderControls(data) {
       renderFocusSelect(data);
-      renderSummary(data.summary_cards || {});
-      renderNodes(data);
-      renderBoundaries(data.boundary_cards || []);
-      renderEdges(data);
-      renderTrace(data);
+      renderGroupFilter(data);
+      renderEdgeFilter(data);
     }
 
     function renderFocusSelect(data) {
       const select = document.getElementById('focusSelect');
+      const current = select.value || focusId;
       select.innerHTML = '';
       (data.nodes || []).forEach((node) => {
         const option = document.createElement('option');
         option.value = node.id;
         option.textContent = `${node.label || node.id} (${node.type || 'node'})`;
-        if (node.id === focusId) option.selected = true;
+        if (node.id === current || node.id === focusId) option.selected = true;
         select.appendChild(option);
       });
     }
 
-    function renderSummary(summary) {
+    function renderGroupFilter(data) {
+      const select = document.getElementById('groupFilter');
+      const previous = select.value || 'all';
+      const groups = Array.from(new Set((data.nodes || []).map((node) => node.group || 'other'))).sort();
+      select.innerHTML = '<option value="all">All groups</option>' + groups.map((group) => `<option value="${escapeHtml(group)}">${escapeHtml(group)}</option>`).join('');
+      select.value = groups.includes(previous) ? previous : 'all';
+    }
+
+    function renderEdgeFilter(data) {
+      const select = document.getElementById('edgeFilter');
+      const previous = select.value || 'all';
+      const types = Array.from(new Set((data.edges || []).map((edge) => edge.type || 'edge'))).sort();
+      select.innerHTML = '<option value="all">All edge types</option>' + types.map((type) => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
+      select.value = types.includes(previous) ? previous : 'all';
+    }
+
+    function renderSummary(summary, data) {
       const root = document.getElementById('summaryCards');
       root.innerHTML = '';
+      const traceIds = traceNodeIds(workingTrace || {});
+      const edgeTraceIds = traceEdgeIds(workingTrace || {});
       const cards = [
-        ['Nodes', summary.node_count ?? 0],
-        ['Edges', summary.edge_count ?? 0],
+        ['Nodes', summary.node_count ?? (data.nodes || []).length],
+        ['Edges', summary.edge_count ?? (data.edges || []).length],
         ['Boundary nodes', summary.boundary_node_count ?? 0],
-        ['Node types', Object.keys(summary.node_types || {}).length]
+        ['Trace nodes', traceIds.size],
+        ['Trace edges', edgeTraceIds.size]
       ];
       cards.forEach(([label, value]) => {
         const card = document.createElement('div');
         card.className = 'metric';
-        card.innerHTML = `<b>${value}</b><span>${label}</span>`;
+        card.innerHTML = `<b>${escapeHtml(value)}</b><span>${escapeHtml(label)}</span>`;
         root.appendChild(card);
+      });
+    }
+
+    function renderGraphMap(data) {
+      const root = document.getElementById('graphMap');
+      const nodes = byId(data.nodes || []);
+      const trace = workingTrace || data.focus_trace || {};
+      const groups = [
+        ['Upstream Evidence / Inputs', [...(trace.upstream || [])].sort((a, b) => b.depth - a.depth)],
+        ['Focus', trace.focus_id ? [{ node_id: trace.focus_id, depth: 0, focus: true }] : []],
+        ['Downstream Impact', trace.downstream || []]
+      ];
+      root.innerHTML = '';
+      groups.forEach(([title, rows]) => {
+        const col = document.createElement('div');
+        col.className = 'map-column';
+        col.innerHTML = `<h3>${escapeHtml(title)}</h3>`;
+        if (!rows.length) col.innerHTML += '<p class="small">No nodes.</p>';
+        rows.forEach((row) => {
+          const node = nodes[row.node_id] || { id: row.node_id, label: row.node_id };
+          const div = document.createElement('div');
+          div.className = `map-node ${row.focus ? 'focus' : ''}`;
+          div.dataset.nodeId = node.id;
+          div.innerHTML = `<b>${escapeHtml(node.label || node.id)}</b><div class="meta">${row.focus ? 'focus' : `depth ${row.depth}`}</div>`;
+          div.addEventListener('click', () => setFocus(node.id));
+          col.appendChild(div);
+        });
+        root.appendChild(col);
       });
     }
 
     function renderNodes(data) {
       const root = document.getElementById('nodeList');
-      const traceIds = traceNodeIds(data.focus_trace || {});
+      const traceIds = traceNodeIds(workingTrace || data.focus_trace || {});
       root.innerHTML = '';
       (data.nodes || []).forEach((node) => {
         const card = document.createElement('article');
         const classes = ['node-card'];
-        if (node.id === data.focus_trace?.focus_id) classes.push('focused');
+        if (node.id === workingTrace?.focus_id) classes.push('focused');
         else if (traceIds.has(node.id)) classes.push('trace');
         card.className = classes.join(' ');
+        card.dataset.nodeId = node.id;
+        card.dataset.group = node.group || 'other';
+        card.dataset.search = [node.id, node.label, node.type, node.status, node.group, ...(node.warnings || [])].join(' ').toLowerCase();
         const warnings = (node.warnings || []).map((w) => `<div class="warning">${escapeHtml(w)}</div>`).join('');
         card.innerHTML = `
           <span class="badge ${groupClass(node.group)}">${escapeHtml(node.badge || node.type || 'Node')}</span>
+          ${traceIds.has(node.id) ? '<span class="pill trace">trace</span>' : ''}
           <h3>${escapeHtml(node.label || node.id)}</h3>
           <div class="meta">${escapeHtml(node.id)}</div>
           <div class="meta">type: ${escapeHtml(node.type || 'unknown')} · status: ${escapeHtml(node.status || 'unknown')}</div>
           ${warnings}
         `;
+        card.addEventListener('click', () => setFocus(node.id));
         root.appendChild(card);
       });
     }
@@ -340,11 +563,13 @@
     function renderEdges(data) {
       const root = document.getElementById('edgeList');
       const nodes = byId(data.nodes || []);
-      const traceEdges = traceEdgeIds(data.focus_trace || {});
+      const traceEdges = traceEdgeIds(workingTrace || data.focus_trace || {});
       root.innerHTML = '';
       (data.edges || []).forEach((edge) => {
         const div = document.createElement('div');
         div.className = `edge-card ${traceEdges.has(edge.id) ? 'trace' : ''}`;
+        div.dataset.edgeType = edge.type || 'edge';
+        div.dataset.search = [edge.id, edge.label, edge.type, edge.note, edge.source, edge.target].join(' ').toLowerCase();
         const source = nodes[edge.source]?.label || edge.source;
         const target = nodes[edge.target]?.label || edge.target;
         div.innerHTML = `
@@ -358,12 +583,12 @@
 
     function renderTrace(data) {
       const root = document.getElementById('traceEdges');
-      const trace = data.focus_trace || {};
+      const trace = workingTrace || data.focus_trace || {};
       const nodes = byId(data.nodes || []);
       const edges = byId(data.edges || []);
       const edgeIds = traceEdgeIds(trace);
       document.getElementById('focusTraceSummary').textContent = trace.focus_id
-        ? `Focus: ${nodes[trace.focus_id]?.label || trace.focus_id}`
+        ? `Focus: ${nodes[trace.focus_id]?.label || trace.focus_id} · upstream ${(trace.upstream || []).length} · downstream ${(trace.downstream || []).length}`
         : 'No focus selected.';
       root.innerHTML = '';
       edgeIds.forEach((edgeId) => {
@@ -379,10 +604,58 @@
       if (!root.innerHTML) root.innerHTML = '<p class="small">No trace edges for this focus.</p>';
     }
 
-    function escapeHtml(value) {
-      return String(value ?? '').replace(/[&<>'"]/g, (char) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[char]));
+    function renderSelectedNode(data) {
+      const root = document.getElementById('selectedNodeDetails');
+      const nodes = byId(data.nodes || []);
+      const node = nodes[focusId];
+      if (!node) {
+        root.innerHTML = '<p class="small">No selected node.</p>';
+        return;
+      }
+      const incoming = (data.edges || []).filter((edge) => edge.target === node.id);
+      const outgoing = (data.edges || []).filter((edge) => edge.source === node.id);
+      root.innerHTML = `
+        <div class="detail-block">
+          <span class="badge ${groupClass(node.group)}">${escapeHtml(node.badge || node.type || 'Node')}</span>
+          <h3>${escapeHtml(node.label || node.id)}</h3>
+          <div class="meta">${escapeHtml(node.id)}</div>
+          <div class="meta">type: ${escapeHtml(node.type || 'unknown')}</div>
+          <div class="meta">status: ${escapeHtml(node.status || 'unknown')}</div>
+          ${node.claim_boundary ? `<div class="warning">${escapeHtml(node.claim_boundary)}</div>` : ''}
+        </div>
+        <div class="detail-block"><b>Incoming:</b> ${incoming.length}<br><b>Outgoing:</b> ${outgoing.length}</div>
+      `;
+    }
+
+    function applyFilters() {
+      if (!payload) return;
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const group = document.getElementById('groupFilter').value || 'all';
+      const edgeType = document.getElementById('edgeFilter').value || 'all';
+      let visibleNodes = 0;
+      let visibleEdges = 0;
+      document.querySelectorAll('.node-card').forEach((card) => {
+        const matchesGroup = group === 'all' || card.dataset.group === group;
+        const matchesQuery = !query || card.dataset.search.includes(query);
+        const visible = matchesGroup && matchesQuery;
+        card.classList.toggle('hidden-by-filter', !visible);
+        if (visible) visibleNodes += 1;
+      });
+      document.querySelectorAll('#edgeList .edge-card').forEach((card) => {
+        const matchesType = edgeType === 'all' || card.dataset.edgeType === edgeType;
+        const matchesQuery = !query || card.dataset.search.includes(query);
+        const visible = matchesType && matchesQuery;
+        card.classList.toggle('hidden-by-filter', !visible);
+        if (visible) visibleEdges += 1;
+      });
+      document.getElementById('filterSummary').textContent = `Showing ${visibleNodes} node(s) and ${visibleEdges} edge(s). Click any node to recompute the trace locally.`;
+    }
+
+    function setFocus(nodeId) {
+      if (!payload || !nodeId) return;
+      focusId = nodeId;
+      payload.focus_trace = computeTrace(payload, focusId, getDepth());
+      render(payload);
     }
 
     async function loadDefaultExport() {
@@ -396,6 +669,29 @@
       }
     }
 
+    function exportFocusedTrace() {
+      if (!payload || !workingTrace) return;
+      const traceIds = traceNodeIds(workingTrace);
+      const edgeIds = traceEdgeIds(workingTrace);
+      const exportPayload = {
+        exported_at: new Date().toISOString(),
+        graph_id: payload.graph_id,
+        focus_id: workingTrace.focus_id,
+        global_claim_boundary: payload.global_claim_boundary,
+        focus_trace: workingTrace,
+        nodes: (payload.nodes || []).filter((node) => traceIds.has(node.id)),
+        edges: (payload.edges || []).filter((edge) => edgeIds.has(edge.id)),
+        boundary_cards: (payload.boundary_cards || []).filter((card) => traceIds.has(card.node_id))
+      };
+      const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${workingTrace.focus_id || 'aqlen-focus'}-trace.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     document.getElementById('loadDefault').addEventListener('click', loadDefaultExport);
     document.getElementById('showPaste').addEventListener('click', () => document.getElementById('pastePanel').classList.toggle('hidden'));
     document.getElementById('renderPaste').addEventListener('click', () => {
@@ -407,13 +703,19 @@
       if (!file) return;
       render(JSON.parse(await file.text()));
     });
-    document.getElementById('applyFocus').addEventListener('click', () => {
-      if (!payload) return;
-      focusId = document.getElementById('focusSelect').value;
-      payload.focus_trace = payload.focus_trace || {};
-      payload.focus_trace.focus_id = focusId;
-      render(payload);
+    document.getElementById('applyFocus').addEventListener('click', () => setFocus(document.getElementById('focusSelect').value));
+    document.getElementById('focusSelect').addEventListener('change', (event) => setFocus(event.target.value));
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('groupFilter').addEventListener('change', applyFilters);
+    document.getElementById('edgeFilter').addEventListener('change', applyFilters);
+    document.getElementById('depthInput').addEventListener('change', () => setFocus(focusId));
+    document.getElementById('resetFilters').addEventListener('click', () => {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('groupFilter').value = 'all';
+      document.getElementById('edgeFilter').value = 'all';
+      applyFilters();
     });
+    document.getElementById('exportTrace').addEventListener('click', exportFocusedTrace);
 
     loadDefaultExport();
   </script>
