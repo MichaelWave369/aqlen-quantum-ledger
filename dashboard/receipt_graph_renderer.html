@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AQLEN Receipt Graph Renderer</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #101d2e;
+      --panel-2: #0d1726;
+      --text: #eef6ff;
+      --muted: #9fb4cc;
+      --line: #243a56;
+      --cyan: #42d7ff;
+      --gold: #f3c65c;
+      --green: #63d99a;
+      --red: #ff7a7a;
+      --purple: #b38cff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #12304d 0, var(--bg) 36%, #03070d 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 32px 24px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 12, 23, 0.68);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -0.04em; margin-bottom: 6px; }
+    h1 span { color: var(--gold); }
+    .subtitle { color: var(--muted); max-width: 920px; margin: 0; }
+    .boundary-banner {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(243, 198, 92, 0.42);
+      border-radius: 14px;
+      background: rgba(243, 198, 92, 0.09);
+      color: #ffe7a3;
+    }
+
+    main { padding: 24px; max-width: 1440px; margin: 0 auto; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    button, input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, #17647d, #1c88aa);
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    input[type="file"] { color: var(--muted); }
+    select {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(16, 29, 46, 0.96), rgba(8, 15, 25, 0.96));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.26);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 720px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+    .metric {
+      background: rgba(66, 215, 255, 0.08);
+      border: 1px solid rgba(66, 215, 255, 0.18);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .metric b { display: block; font-size: 1.5rem; color: var(--cyan); }
+    .metric span { color: var(--muted); font-size: 0.85rem; }
+
+    .node-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .node-card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.035);
+      border-radius: 14px;
+      padding: 14px;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+    .node-card.focused, .node-card.trace {
+      border-color: var(--gold);
+      background: rgba(243, 198, 92, 0.10);
+    }
+    .node-card:hover { transform: translateY(-2px); border-color: rgba(66, 215, 255, 0.7); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #06101c;
+      background: var(--cyan);
+      margin-bottom: 8px;
+    }
+    .badge.evidence { background: var(--gold); }
+    .badge.device { background: var(--green); }
+    .badge.error { background: var(--red); }
+    .badge.calibration { background: var(--cyan); }
+    .badge.score { background: var(--purple); }
+    .badge.architecture { background: #b8c6d8; }
+
+    .node-card h3 { margin-bottom: 6px; font-size: 1.05rem; }
+    .meta { color: var(--muted); font-size: 0.84rem; word-break: break-word; }
+    .warning {
+      margin-top: 10px;
+      border-left: 3px solid var(--gold);
+      padding: 8px 10px;
+      background: rgba(243, 198, 92, 0.08);
+      color: #ffe7a3;
+      border-radius: 8px;
+      font-size: 0.88rem;
+    }
+
+    .edge-list { display: flex; flex-direction: column; gap: 10px; }
+    .edge-card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .edge-card.trace {
+      border-color: var(--gold);
+      background: rgba(243, 198, 92, 0.08);
+    }
+    .edge-path { color: var(--cyan); font-weight: 800; }
+    .edge-note { color: var(--muted); margin-top: 5px; font-size: 0.9rem; }
+
+    .side-stack { display: flex; flex-direction: column; gap: 18px; }
+    .boundary-card {
+      border: 1px solid rgba(243, 198, 92, 0.32);
+      background: rgba(243, 198, 92, 0.07);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .boundary-card b { color: var(--gold); }
+
+    textarea {
+      width: 100%; min-height: 240px; resize: vertical;
+      background: #050b14; color: var(--text);
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .small { color: var(--muted); font-size: 0.9rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AQLEN <span>Ω</span> Receipt Graph</h1>
+    <p class="subtitle">Static dashboard renderer for evidence anchors, qubit receipts, noise events, calibration receipts, readiness scores, and module paths.</p>
+    <div id="globalBoundary" class="boundary-banner">Load a dashboard export to show the global claim boundary.</div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <button id="loadDefault">Load demo export</button>
+      <input id="fileInput" type="file" accept="application/json,.json" />
+      <select id="focusSelect" aria-label="Focus node"></select>
+      <button id="applyFocus">Apply focus</button>
+      <button id="showPaste">Paste JSON</button>
+    </div>
+
+    <section id="pastePanel" class="panel hidden" style="margin-bottom: 18px;">
+      <h2>Paste dashboard export JSON</h2>
+      <textarea id="jsonPaste" placeholder="Paste the output from tools/receipt_graph_dashboard_export.py here..."></textarea>
+      <p class="small">This renderer is local-only. Pasted data stays in your browser tab.</p>
+      <button id="renderPaste">Render pasted JSON</button>
+    </section>
+
+    <section class="summary" id="summaryCards"></section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Nodes</h2>
+        <p id="graphSummary" class="small"></p>
+        <div class="node-list" id="nodeList"></div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel">
+          <h2>Boundary Cards</h2>
+          <div id="boundaryCards"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Focus Trace</h2>
+          <p class="small" id="focusTraceSummary">No focus selected.</p>
+          <div id="traceEdges" class="edge-list"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Edges</h2>
+          <div id="edgeList" class="edge-list"></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    let payload = null;
+    let focusId = null;
+
+    const groupClass = (group) => String(group || 'other').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+    const byId = (items) => Object.fromEntries((items || []).map((item) => [item.id, item]));
+    const traceNodeIds = (trace) => new Set([
+      trace?.focus_id,
+      ...(trace?.upstream || []).map((x) => x.node_id),
+      ...(trace?.downstream || []).map((x) => x.node_id)
+    ].filter(Boolean));
+    const traceEdgeIds = (trace) => new Set([
+      ...(trace?.upstream || []).map((x) => x.via_edge_id),
+      ...(trace?.downstream || []).map((x) => x.via_edge_id)
+    ].filter(Boolean));
+
+    function render(data) {
+      payload = data;
+      focusId = data?.focus_trace?.focus_id || focusId || null;
+      document.getElementById('globalBoundary').textContent = data.global_claim_boundary || 'No global claim boundary provided.';
+      document.getElementById('graphSummary').textContent = `${data.graph_id || 'unknown graph'} — ${data.summary || ''}`;
+      renderFocusSelect(data);
+      renderSummary(data.summary_cards || {});
+      renderNodes(data);
+      renderBoundaries(data.boundary_cards || []);
+      renderEdges(data);
+      renderTrace(data);
+    }
+
+    function renderFocusSelect(data) {
+      const select = document.getElementById('focusSelect');
+      select.innerHTML = '';
+      (data.nodes || []).forEach((node) => {
+        const option = document.createElement('option');
+        option.value = node.id;
+        option.textContent = `${node.label || node.id} (${node.type || 'node'})`;
+        if (node.id === focusId) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    function renderSummary(summary) {
+      const root = document.getElementById('summaryCards');
+      root.innerHTML = '';
+      const cards = [
+        ['Nodes', summary.node_count ?? 0],
+        ['Edges', summary.edge_count ?? 0],
+        ['Boundary nodes', summary.boundary_node_count ?? 0],
+        ['Node types', Object.keys(summary.node_types || {}).length]
+      ];
+      cards.forEach(([label, value]) => {
+        const card = document.createElement('div');
+        card.className = 'metric';
+        card.innerHTML = `<b>${value}</b><span>${label}</span>`;
+        root.appendChild(card);
+      });
+    }
+
+    function renderNodes(data) {
+      const root = document.getElementById('nodeList');
+      const traceIds = traceNodeIds(data.focus_trace || {});
+      root.innerHTML = '';
+      (data.nodes || []).forEach((node) => {
+        const card = document.createElement('article');
+        const classes = ['node-card'];
+        if (node.id === data.focus_trace?.focus_id) classes.push('focused');
+        else if (traceIds.has(node.id)) classes.push('trace');
+        card.className = classes.join(' ');
+        const warnings = (node.warnings || []).map((w) => `<div class="warning">${escapeHtml(w)}</div>`).join('');
+        card.innerHTML = `
+          <span class="badge ${groupClass(node.group)}">${escapeHtml(node.badge || node.type || 'Node')}</span>
+          <h3>${escapeHtml(node.label || node.id)}</h3>
+          <div class="meta">${escapeHtml(node.id)}</div>
+          <div class="meta">type: ${escapeHtml(node.type || 'unknown')} · status: ${escapeHtml(node.status || 'unknown')}</div>
+          ${warnings}
+        `;
+        root.appendChild(card);
+      });
+    }
+
+    function renderBoundaries(cards) {
+      const root = document.getElementById('boundaryCards');
+      root.innerHTML = cards.length ? '' : '<p class="small">No boundary cards in this export.</p>';
+      cards.forEach((card) => {
+        const div = document.createElement('div');
+        div.className = 'boundary-card';
+        div.innerHTML = `<b>${escapeHtml(card.label || card.node_id)}</b><p>${escapeHtml(card.boundary || '')}</p><div class="meta">${escapeHtml(card.node_id || '')}</div>`;
+        root.appendChild(div);
+      });
+    }
+
+    function renderEdges(data) {
+      const root = document.getElementById('edgeList');
+      const nodes = byId(data.nodes || []);
+      const traceEdges = traceEdgeIds(data.focus_trace || {});
+      root.innerHTML = '';
+      (data.edges || []).forEach((edge) => {
+        const div = document.createElement('div');
+        div.className = `edge-card ${traceEdges.has(edge.id) ? 'trace' : ''}`;
+        const source = nodes[edge.source]?.label || edge.source;
+        const target = nodes[edge.target]?.label || edge.target;
+        div.innerHTML = `
+          <div class="edge-path">${escapeHtml(source)} → ${escapeHtml(target)}</div>
+          <div class="meta">${escapeHtml(edge.label || edge.type || 'edge')} · ${escapeHtml(edge.id || '')}</div>
+          ${edge.note ? `<div class="edge-note">${escapeHtml(edge.note)}</div>` : ''}
+        `;
+        root.appendChild(div);
+      });
+    }
+
+    function renderTrace(data) {
+      const root = document.getElementById('traceEdges');
+      const trace = data.focus_trace || {};
+      const nodes = byId(data.nodes || []);
+      const edges = byId(data.edges || []);
+      const edgeIds = traceEdgeIds(trace);
+      document.getElementById('focusTraceSummary').textContent = trace.focus_id
+        ? `Focus: ${nodes[trace.focus_id]?.label || trace.focus_id}`
+        : 'No focus selected.';
+      root.innerHTML = '';
+      edgeIds.forEach((edgeId) => {
+        const edge = edges[edgeId];
+        if (!edge) return;
+        const div = document.createElement('div');
+        div.className = 'edge-card trace';
+        const source = nodes[edge.source]?.label || edge.source;
+        const target = nodes[edge.target]?.label || edge.target;
+        div.innerHTML = `<div class="edge-path">${escapeHtml(source)} → ${escapeHtml(target)}</div><div class="edge-note">${escapeHtml(edge.note || edge.type || '')}</div>`;
+        root.appendChild(div);
+      });
+      if (!root.innerHTML) root.innerHTML = '<p class="small">No trace edges for this focus.</p>';
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[char]));
+    }
+
+    async function loadDefaultExport() {
+      try {
+        const response = await fetch('receipt_graph_dashboard_demo.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        render(await response.json());
+      } catch (error) {
+        document.getElementById('globalBoundary').textContent = 'Could not fetch receipt_graph_dashboard_demo.json. Serve the dashboard folder with a local web server, or paste/upload the JSON export.';
+        console.warn(error);
+      }
+    }
+
+    document.getElementById('loadDefault').addEventListener('click', loadDefaultExport);
+    document.getElementById('showPaste').addEventListener('click', () => document.getElementById('pastePanel').classList.toggle('hidden'));
+    document.getElementById('renderPaste').addEventListener('click', () => {
+      const text = document.getElementById('jsonPaste').value;
+      render(JSON.parse(text));
+    });
+    document.getElementById('fileInput').addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      render(JSON.parse(await file.text()));
+    });
+    document.getElementById('applyFocus').addEventListener('click', () => {
+      if (!payload) return;
+      focusId = document.getElementById('focusSelect').value;
+      payload.focus_trace = payload.focus_trace || {};
+      payload.focus_trace.focus_id = focusId;
+      render(payload);
+    });
+
+    loadDefaultExport();
+  </script>
+</body>
+</html>
