@@ -2,7 +2,7 @@
 """Run positive and negative AQLEN dashboard payload fixture checks.
 
 This suite proves the dashboard payload validator does two things:
-1. Accepts known-good renderer payloads.
+1. Accepts known-good renderer payloads and focus-mode fixture manifests.
 2. Rejects intentionally broken payloads with specific trust-boundary errors.
 
 It is dependency-free so it can run locally or in CI without installing packages.
@@ -15,7 +15,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
@@ -24,7 +24,7 @@ if str(TOOLS) not in sys.path:
 
 from validate_dashboard_payload import load_json, validate_payload  # noqa: E402
 
-SUITE_VERSION = "dashboard_fixture_suite_v0_7"
+SUITE_VERSION = "dashboard_fixture_suite_v0_7_1"
 SCHEMA_REF = "schemas/dashboard_payload.schema.json"
 
 DEFAULT_POSITIVE_FIXTURES = [
@@ -50,7 +50,7 @@ DEFAULT_NEGATIVE_FIXTURES = {
         "boundary card references missing node",
     ],
     "dashboard/fixtures/negative_focus_trace_missing_node.json": [
-        "focus_trace upstream",
+        "focus_trace.upstream",
         "node not found",
     ],
 }
@@ -67,8 +67,12 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _load_json(path: Path) -> Dict[str, Any]:
+    return load_json(path)
+
+
 def _validate(path: Path) -> Dict[str, Any]:
-    payload = load_json(path)
+    payload = _load_json(path)
     return validate_payload(payload)
 
 
@@ -97,6 +101,88 @@ def _attach_summary(results: Dict[str, Any]) -> None:
     }
 
 
+def _node_ids(payload: Dict[str, Any]) -> set[str]:
+    return {str(node.get("id")) for node in payload.get("nodes", []) if node.get("id")}
+
+
+def _boundary_ids(payload: Dict[str, Any]) -> set[str]:
+    ids = {"global_claim_boundary"}
+    for card in payload.get("boundary_cards", []):
+        node_id = card.get("node_id")
+        if node_id:
+            ids.add(str(node_id))
+    for node in payload.get("nodes", []):
+        if node.get("claim_boundary"):
+            ids.add(str(node.get("id")))
+    return ids
+
+
+def _validate_focus_manifest(root: Path, manifest_path: Path) -> Tuple[bool, Dict[str, Any]]:
+    """Validate a lightweight renderer focus manifest.
+
+    Focus manifests are not full dashboard payloads. They point at a source payload
+    and declare what focus node / boundary expectations should remain available
+    when the renderer changes focus locally.
+    """
+
+    manifest = _load_json(manifest_path)
+    source_rel = manifest.get("source_payload")
+    expected_focus_id = manifest.get("expected_focus_id")
+    expected_boundaries = manifest.get("expected_visible_boundaries", [])
+
+    errors: List[str] = []
+    warnings: List[str] = []
+
+    if not source_rel:
+        errors.append("focus manifest missing source_payload")
+        return False, {
+            "ok": False,
+            "fixture_kind": "focus_manifest",
+            "source_payload": None,
+            "errors": errors,
+            "warnings": warnings,
+        }
+
+    source_path = root / str(source_rel)
+    source_payload = _load_json(source_path)
+    source_report = validate_payload(source_payload)
+    errors.extend(source_report.get("errors", []))
+    warnings.extend(source_report.get("warnings", []))
+
+    ids = _node_ids(source_payload)
+    boundary_ids = _boundary_ids(source_payload)
+
+    if expected_focus_id and expected_focus_id not in ids:
+        errors.append(f"expected_focus_id not found in source payload nodes: {expected_focus_id}")
+
+    for boundary_id in expected_boundaries:
+        if boundary_id not in boundary_ids:
+            errors.append(f"expected visible boundary not found in source payload: {boundary_id}")
+
+    ok = not errors
+    return ok, {
+        "ok": ok,
+        "fixture_kind": "focus_manifest",
+        "source_payload": str(source_rel),
+        "expected_focus_id": expected_focus_id,
+        "expected_visible_boundaries": expected_boundaries,
+        "errors": errors,
+        "warnings": warnings,
+        "source_report": source_report,
+    }
+
+
+def _validate_positive(root: Path, rel: str) -> Tuple[bool, Dict[str, Any]]:
+    path = root / rel
+    payload = _load_json(path)
+
+    if "source_payload" in payload:
+        return _validate_focus_manifest(root, path)
+
+    report = validate_payload(payload)
+    return bool(report.get("ok")), report
+
+
 def run_suite(root: Path) -> Dict[str, Any]:
     results: Dict[str, Any] = {
         "suite_version": SUITE_VERSION,
@@ -110,9 +196,7 @@ def run_suite(root: Path) -> Dict[str, Any]:
     }
 
     for rel in DEFAULT_POSITIVE_FIXTURES:
-        path = root / rel
-        report = _validate(path)
-        passed = bool(report.get("ok"))
+        passed, report = _validate_positive(root, rel)
         results["positive"][rel] = {"passed": passed, "report": report}
         results["ok"] = results["ok"] and passed
 
