@@ -1,0 +1,34 @@
+{
+  "renderer_version": "v0.2",
+  "local_server": {
+    "command": "python -m http.server 8000",
+    "open": "http://localhost:8000/dashboard/receipt_graph_renderer.html"
+  },
+  "default_payload": "dashboard/receipt_graph_dashboard_demo.json",
+  "common_actions": [
+    {
+      "action": "load_demo_export",
+      "description": "Click Load demo export to render the dashboard demo payload."
+    },
+    {
+      "action": "click_node_to_focus",
+      "description": "Click any node card to recompute upstream and downstream traces from that node."
+    },
+    {
+      "action": "search",
+      "description": "Use the search box to filter visible nodes and edges by text."
+    },
+    {
+      "action": "filter_group",
+      "description": "Use the group dropdown to isolate evidence, device, error, calibration, score, or architecture nodes."
+    },
+    {
+      "action": "filter_edge_type",
+      "description": "Use the edge-type dropdown to isolate supports, measured_on, mitigated_by, derived_from, feeds_module, or updates edges."
+    },
+    {
+      "action": "export_focused_trace",
+      "description": "Click Export focused trace to save a JSON file containing only the current trace nodes, edges, and boundary cards."
+    }
+  ]
+}
