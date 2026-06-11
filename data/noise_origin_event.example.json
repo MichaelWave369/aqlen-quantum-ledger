@@ -1,0 +1,10 @@
+{
+  "event_id": "NOISE-EXAMPLE-001",
+  "device_id": "SILICON-SPIN-UNITCELL-PLACEHOLDER-001",
+  "noise_class": "charge_noise",
+  "observed_symptom": "gate fidelity variation or drift during repeated calibration cycle",
+  "evidence_basis": "Classified from silicon quantum-dot error-origin literature and process-variation evidence. Replace with measured local device data in production.",
+  "confidence": "medium",
+  "mitigation_route": "Retune operating point, improve pulse shaping, correlate with wafer/process metrics, and monitor drift over time.",
+  "linked_calibration_receipts": ["CDR-EXAMPLE-001"]
+}
