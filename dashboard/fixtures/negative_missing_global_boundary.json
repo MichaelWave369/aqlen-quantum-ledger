@@ -1,0 +1,25 @@
+{
+  "dashboard_payload_version": "0.5-negative",
+  "graph_id": "aqlen.negative.missing_global_boundary",
+  "graph_version": "0.1",
+  "nodes": [
+    {
+      "id": "score-demo-001",
+      "type": "readiness_score",
+      "label": "Demo readiness score",
+      "group": "score",
+      "status": "demo"
+    }
+  ],
+  "edges": [],
+  "summary_cards": {
+    "node_count": 1,
+    "edge_count": 0
+  },
+  "boundary_cards": [],
+  "focus_trace": {
+    "focus_id": "score-demo-001",
+    "upstream": [],
+    "downstream": []
+  }
+}
