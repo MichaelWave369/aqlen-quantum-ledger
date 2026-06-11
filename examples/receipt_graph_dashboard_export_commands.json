@@ -1,0 +1,19 @@
+{
+  "commands": [
+    {
+      "name": "print_dashboard_payload",
+      "command": "python tools/receipt_graph_dashboard_export.py export --graph examples/receipt_graph_minimal.json",
+      "purpose": "Print the frontend-ready payload to stdout."
+    },
+    {
+      "name": "export_focus_score_trace",
+      "command": "python tools/receipt_graph_dashboard_export.py export --graph examples/receipt_graph_minimal.json --focus score-demo-001 --depth 6 --out dashboard/receipt_graph_dashboard_demo.json",
+      "purpose": "Export dashboard payload centered on a readiness score path."
+    },
+    {
+      "name": "export_evidence_focus_trace",
+      "command": "python tools/receipt_graph_dashboard_export.py export --graph examples/receipt_graph_minimal.json --focus ev-silicon-spin-foundry --depth 6",
+      "purpose": "Inspect downstream impact from an evidence anchor."
+    }
+  ]
+}
