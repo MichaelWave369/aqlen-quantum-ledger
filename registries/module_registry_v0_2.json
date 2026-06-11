@@ -1,0 +1,98 @@
+{
+  "registry_id": "aqlen_module_registry_v0_2",
+  "project": "AQLEN Omega",
+  "version": "0.2",
+  "claim_boundary": "Research/product architecture for tracking hardware provenance, error origin, calibration action, and readiness assessment. Not a claim that practical fault-tolerant quantum computing is solved.",
+  "modules": [
+    {
+      "id": "aqlen.layer.01.provenance",
+      "number": 1,
+      "name": "Qubit Provenance Registry",
+      "purpose": "Give every device, qubit, wafer, die, material stack, and calibration lineage a stable identity.",
+      "inputs": ["wafer metadata", "die metadata", "qubit identity", "material/process notes", "calibration history"],
+      "outputs": ["qubit provenance receipts", "device lineage graph", "manufacturing-to-performance trace links"],
+      "boundary_note": "Provenance does not prove quality; it makes quality traceable."
+    },
+    {
+      "id": "aqlen.layer.02.temporal_error_memory",
+      "number": 2,
+      "name": "Temporal Error Memory",
+      "purpose": "Record errors across time so drift, repetition, and context can be studied.",
+      "inputs": ["noise-origin events", "gate operation records", "readout observations", "environment metadata", "sequence context"],
+      "outputs": ["error timelines", "recurrence patterns", "drift histories", "candidate physical-origin labels"],
+      "boundary_note": "An error label is a hypothesis unless directly supported by measurement or literature."
+    },
+    {
+      "id": "aqlen.layer.03.predictive_calibration",
+      "number": 3,
+      "name": "Predictive Calibration Engine",
+      "purpose": "Use past drift and error patterns to suggest when calibration should be checked or adjusted.",
+      "inputs": ["historical calibration receipts", "recent error events", "stability metrics", "target thresholds", "operating conditions"],
+      "outputs": ["calibration watchlist", "drift warnings", "suggested calibration checks", "before/action/after receipts"],
+      "boundary_note": "Predictive suggestions require human review and physical validation."
+    },
+    {
+      "id": "aqlen.layer.04.digital_twin",
+      "number": 4,
+      "name": "Quantum Digital Twin Layer",
+      "purpose": "Maintain a simulated or modeled counterpart of a device/system for what-if exploration.",
+      "inputs": ["device graph", "noise model", "calibration state", "operation schedule", "evidence-linked parameters"],
+      "outputs": ["simulation runs", "model deltas", "risk flags", "recommended experiment plans"],
+      "boundary_note": "A digital twin is a model, not the physical system."
+    },
+    {
+      "id": "aqlen.layer.05.manufacturing_mesh",
+      "number": 5,
+      "name": "Manufacturing Intelligence Mesh",
+      "purpose": "Connect manufacturing variation to device behavior and qubit performance.",
+      "inputs": ["wafer maps", "device geometry metadata", "material/process metadata", "performance measurements", "yield and variation data"],
+      "outputs": ["fab-to-qubit correlation receipts", "yield pattern summaries", "process feedback hypotheses"],
+      "boundary_note": "Correlation is not causation; process recommendations must be evidence-ranked."
+    },
+    {
+      "id": "aqlen.layer.06.knowledge_graph",
+      "number": 6,
+      "name": "Quantum Knowledge Graph",
+      "purpose": "Connect materials, devices, errors, calibrations, evidence anchors, outcomes, and claim boundaries.",
+      "inputs": ["evidence anchors", "receipt objects", "module outputs", "claim-boundary records", "source-status metadata"],
+      "outputs": ["traceable knowledge graph", "claim support maps", "evidence gaps", "reusable learning paths"],
+      "boundary_note": "Graph edges must state confidence and source status."
+    },
+    {
+      "id": "aqlen.layer.07.ai_assisted_search",
+      "number": 7,
+      "name": "AI-Assisted Calibration Search",
+      "purpose": "Help search the calibration and mitigation space while preserving human review and audit trails.",
+      "inputs": ["error timelines", "calibration receipts", "digital-twin runs", "knowledge graph links", "human constraints"],
+      "outputs": ["ranked calibration candidates", "explanation trails", "suggested experiments", "rejected-option receipts"],
+      "boundary_note": "AI assistance is not autonomous science. Human review remains required."
+    },
+    {
+      "id": "aqlen.layer.08.federated_grid",
+      "number": 8,
+      "name": "Federated Research Grid",
+      "purpose": "Enable shared learning across labs, devices, and platforms without forcing private raw data exposure.",
+      "inputs": ["anonymized receipts", "platform metadata", "lab consent/policy rules", "cross-system evidence anchors"],
+      "outputs": ["shared pattern summaries", "cross-platform comparison receipts", "privacy-preserving learning objects"],
+      "boundary_note": "Federation requires consent, privacy controls, and explicit data-sharing policy."
+    },
+    {
+      "id": "aqlen.layer.09.design_explorer",
+      "number": 9,
+      "name": "Human-Reviewed Design Explorer",
+      "purpose": "Support exploration of new device architectures, control methods, calibration plans, and error models with human review.",
+      "inputs": ["knowledge graph", "design candidates", "literature anchors", "simulated outcomes", "operator notes"],
+      "outputs": ["design exploration receipts", "hypothesis cards", "review decisions", "next-experiment plans"],
+      "boundary_note": "Design exploration proposes hypotheses; it does not validate them without experiment."
+    },
+    {
+      "id": "aqlen.layer.10.living_ledger",
+      "number": 10,
+      "name": "Living Quantum Ledger",
+      "purpose": "Provide the long-term memory layer for devices, calibrations, experiments, errors, evidence, and lessons.",
+      "inputs": ["all ledger receipts", "evidence anchors", "claim-boundary updates", "review outcomes", "version history"],
+      "outputs": ["reusable knowledge records", "audit trails", "longitudinal device memory", "release notes and claim posture updates"],
+      "boundary_note": "The ledger is only as strong as its source discipline, validation, and review process."
+    }
+  ]
+}
