@@ -1,0 +1,21 @@
+{
+  "receipt_id": "CDR-EXAMPLE-001",
+  "device_id": "SILICON-SPIN-UNITCELL-PLACEHOLDER-001",
+  "timestamp": "2026-06-10T00:00:00Z",
+  "before_state": {
+    "two_qubit_fidelity_estimate": 0.988,
+    "suspected_drift": "pulse detuning / charge noise / contextual sequence noise"
+  },
+  "calibration_action": {
+    "action_type": "pulse retuning and operating-point adjustment",
+    "parameters_changed": ["pulse_amplitude", "pulse_duration", "detuning", "readout_window"],
+    "operator_or_agent": "AQLEN calibration agent placeholder"
+  },
+  "after_state": {
+    "two_qubit_fidelity_estimate": 0.991,
+    "remaining_issue": "monitor long-run stability"
+  },
+  "fidelity_delta": 0.003,
+  "residual_risk": "Improvement may be context-specific; repeatability and sequence dependence must be tested.",
+  "reversible": true
+}
