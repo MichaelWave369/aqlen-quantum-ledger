@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://parallax.local/schemas/aqlen/qubit_provenance_receipt.schema.json",
+  "title": "Qubit Provenance Receipt",
+  "type": "object",
+  "required": ["receipt_id", "device_id", "platform", "device_type", "material_stack", "manufacturing_context", "test_context", "metrics", "evidence_links"],
+  "properties": {
+    "receipt_id": {"type": "string"},
+    "device_id": {"type": "string"},
+    "platform": {"type": "string"},
+    "device_type": {"type": "string"},
+    "material_stack": {
+      "type": "object",
+      "properties": {
+        "substrate": {"type": "string"},
+        "isotope_context": {"type": "string"},
+        "gate_stack": {"type": "string"},
+        "dopant_or_dot_context": {"type": "string"}
+      }
+    },
+    "manufacturing_context": {
+      "type": "object",
+      "properties": {
+        "process_line": {"type": "string"},
+        "wafer_size_mm": {"type": "number"},
+        "fabrication_mode": {"type": "string"},
+        "batch_or_wafer_id": {"type": "string"}
+      }
+    },
+    "test_context": {
+      "type": "object",
+      "properties": {
+        "temperature_k": {"type": "number"},
+        "measurement_method": {"type": "string"},
+        "control_method": {"type": "string"}
+      }
+    },
+    "metrics": {"type": "object"},
+    "evidence_links": {"type": "array", "items": {"type": "string"}}
+  }
+}
