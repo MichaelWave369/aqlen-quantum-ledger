@@ -4,15 +4,23 @@ on:
   push:
     paths:
       - "dashboard/**"
+      - "schemas/dashboard_payload.schema.json"
       - "tools/validate_dashboard_*.py"
       - "examples/graph_renderer_v0_6_ci_validation_commands.json"
+      - "examples/dashboard_validation_v0_7_commands.json"
       - "docs/DASHBOARD_VALIDATION_v0_6_CI_NEGATIVE_FIXTURES.md"
+      - "docs/DASHBOARD_PAYLOAD_SCHEMA_v0_7.md"
+      - "docs/DASHBOARD_VALIDATION_REPORTS_v0_7.md"
   pull_request:
     paths:
       - "dashboard/**"
+      - "schemas/dashboard_payload.schema.json"
       - "tools/validate_dashboard_*.py"
       - "examples/graph_renderer_v0_6_ci_validation_commands.json"
+      - "examples/dashboard_validation_v0_7_commands.json"
       - "docs/DASHBOARD_VALIDATION_v0_6_CI_NEGATIVE_FIXTURES.md"
+      - "docs/DASHBOARD_PAYLOAD_SCHEMA_v0_7.md"
+      - "docs/DASHBOARD_VALIDATION_REPORTS_v0_7.md"
 
 jobs:
   validate-dashboard-payloads:
@@ -26,5 +34,16 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run dashboard fixture suite
-        run: python tools/validate_dashboard_fixture_suite.py
+      - name: Run dashboard fixture suite with report
+        run: |
+          mkdir -p dashboard/validation_reports
+          python tools/validate_dashboard_fixture_suite.py \
+            --report-out dashboard/validation_reports/dashboard_fixture_suite_report.json
+
+      - name: Upload dashboard validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-validation-report
+          path: dashboard/validation_reports/dashboard_fixture_suite_report.json
+          if-no-files-found: warn
