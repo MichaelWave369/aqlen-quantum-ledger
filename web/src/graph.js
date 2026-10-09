@@ -40,7 +40,7 @@ export function connections(payload, id) {
   return payload.edges.filter((edge) => edge.source === id || edge.target === id);
 }
 export function layoutNodes(nodes) {
-  const grouped = {};
+  const grouped = Object.create(null);
   const positions = {};
   for (const node of nodes) (grouped[node.group] ??= []).push(node);
   const x = { evidence: 120, device: 340, error: 560, calibration: 780, score: 1000 };
