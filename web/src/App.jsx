@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import sample from "../../dashboard/receipt_graph_dashboard_demo.json";
 import { GROUPS, LABELS, connections, layoutNodes, validatePayload } from "./graph.js";
 
