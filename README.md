@@ -16,7 +16,7 @@ material → device → qubit → control → noise → calibration → correcti
 
 ## What this repo is
 
-This repository contains the private build scaffold for a hardware-to-error-to-calibration ledger:
+This public repository contains a research scaffold for a hardware-to-error-to-calibration ledger:
 
 - Evidence anchors for silicon spin qubit manufacturability, cryogenic wafer probing, error-origin analysis, above-1K operation, silicon QEC demos, cryo-CMOS control, and atom-processor milestones.
 - JSON schemas for receipts and events used by the AQLEN ledger.
@@ -99,6 +99,16 @@ See `docs/CLAIM_BOUNDARY_MATRIX.md` and `docs/POSTER_TRUTH_PASS_AQLEN_OMEGA.md` 
 
 ## Version
 
-Initial private scaffold: `v0.1`
+Initial scaffold: `v0.1`
 
 Current build direction: `v0.2` architecture registry + dashboard data model + poster truth-pass.
+
+## Live research console (React)
+
+The static [React + Vite console](web/README.md) explores AQLEN's **illustrative** evidence and receipt graph. It supports node inspection, search, filtering and local JSON import, all with visible claim boundaries. Files imported by visitors remain in their own browsers. This demo is not a quantum simulator or a claim of deployed quantum hardware.
+
+**GitHub Pages:** https://michaelwave369.github.io/aqlen-quantum-ledger/ (enable **Settings → Pages → Source: GitHub Actions** after merging).
+
+## License
+
+The project software is MIT-licensed. See [LICENSE](LICENSE). External research, figures and third-party material retain their own applicable licensing and attribution.
