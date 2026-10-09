@@ -15,7 +15,7 @@ test("AQLEN React console renders, not just builds", async () => {
     const html = renderToStaticMarkup(React.createElement(App));
     assert.match(html, /Trace the error/);
     assert.match(html, /Receipt graph|Follow the chain of evidence/);
-    assert.match(html, /global/i, "check that the actual graph and claim-boundary text are rendered");
+    assert.match(html, /research and intelligence architecture/i, "global claim-boundary text must be visible");
     assert.match(html, /AQLEN/);
   } finally {
     await vite.close();
