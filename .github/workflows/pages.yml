@@ -1,0 +1,59 @@
+name: Publish AQLEN React console
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "dashboard/receipt_graph_dashboard_demo.json"
+      - ".github/workflows/pages.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "dashboard/receipt_graph_dashboard_demo.json"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Validate and build React console
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        working-directory: web
+        run: npm install --no-audit --no-fund
+      - name: Test graph contracts
+        working-directory: web
+        run: npm test
+      - name: Build static React site
+        working-directory: web
+        run: npm run build
+      - name: Upload Pages site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://michaelwave369.github.io/aqlen-quantum-ledger/
+    concurrency:
+      group: aqlen-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/deploy-pages@v4
