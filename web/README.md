@@ -44,3 +44,15 @@ are validated as **software/simulated evidence**, converted locally into
 a read-only AQLEN dashboard view, and NEVER elevated to physical qubit,
 calibration, readiness, or independently verified scientific claims.
 See [NBG-QM1 local bridge protocol](../docs/NBG_QM1_BRIDGE.md).
+
+## QM2 repeated-trial software evidence import
+
+The same **Import JSON** control accepts NBG-QM2's full versioned experiment
+receipt (`nbg.qm2.receipt.v1`). This adapter checks versioned provenance,
+paired trial consistency, valid execution order and arithmetic summaries,
+then displays the reported medians, quartiles, variation, hash-audit flags
+and paired ratios as **untrusted software evidence**.
+
+AQLEN does **not** rehash the underlying nonce space to independently verify
+the submitted benchmark, and importing the receipt does not approve a scientific
+claim or write to any ledger. See [QM2 bridge protocol](../docs/NBG_QM2_BRIDGE.md).
