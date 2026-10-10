@@ -19,3 +19,12 @@ footer{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;border
 @media(max-width:750px){.nav{height:75px}.nav nav{display:none}.brand-symbol{height:43px;width:43px}.brand b{font-size:18px}.brand small{font-size:8px}.repository{font-size:11px;padding:9px}.hero{display:block;padding-top:50px;padding-bottom:35px}.hero h1{font-size:clamp(44px,10vw,64px)}.hero-visual{min-height:185px;transform:scale(.65);transform-origin:center;margin:-18px 0 -65px}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid #294254}.heading{display:block}.data-label{display:inline-block;margin-top:20px}.layers{grid-template-columns:repeat(2,1fr)}.boundary-section{grid-template-columns:1fr;padding:25px}.boundary-symbol{display:none}.explorer-section,.architecture-section{padding-top:48px;padding-bottom:48px}}
 @media(max-width:480px){.actions .btn{width:100%}.layers{grid-template-columns:1fr}.toolbar button{flex:1}.hero h1{letter-spacing:-.055em}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+/* QM2 imported benchmark remains visually separate from verified source records. */
+.qm2-import-detail{border:1px solid #66849955;border-radius:10px;padding:14px;margin-top:18px;background:#0b1c2b}
+.qm2-import-detail h4{margin:0 0 8px;color:#77ece3}
+.qm2-import-detail p{font-size:12px;color:#c4d1df;line-height:1.55}
+.qm2-import-detail dl{margin:12px 0 0}
+.qm2-import-detail dl div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;border-top:1px solid #66849944;padding:8px 0}
+.qm2-import-detail dt{color:#b8cbd7;font-size:10px}
+.qm2-import-detail dd{color:#e6fff6;font-size:12px;margin:0;overflow-wrap:anywhere;text-align:right}
