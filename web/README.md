@@ -35,3 +35,12 @@ Vite's base path is set to `/aqlen-quantum-ledger/`. The prior standalone render
 The console never asserts that fault-tolerant quantum computing is solved or that readiness scoring demonstrates quantum advantage. See `docs/CLAIM_BOUNDARY_MATRIX.md`, `docs/DASHBOARD_PAYLOAD_SCHEMA_v0_7.md` and `docs/LOCAL_FIRST_DASHBOARD_BOUNDARY.md`.
 
 The repository software is offered under the root MIT `LICENSE`. Third-party literature, logos, figures and externally owned material retain their own rights and attribution requirements.
+
+## NBG-QM1 evidence bridge
+
+The browser's existing **Import JSON** also recognizes versioned NBG-QM1
+receipt-graph exports from the NBG quantum-inspired mining demo. These
+are validated as **software/simulated evidence**, converted locally into
+a read-only AQLEN dashboard view, and NEVER elevated to physical qubit,
+calibration, readiness, or independently verified scientific claims.
+See [NBG-QM1 local bridge protocol](../docs/NBG_QM1_BRIDGE.md).
