@@ -47,9 +47,9 @@ The public viewer's existing 2 MB import limit still applies.
 ## Acceptance
 
 From AQLEN's \`web/\`: \`npm test && npm run build\`.
-Positive integration tests load a genuine QM2 receipt constructed by the NBG
-algorithm; negative fixtures tamper with controls, measured trials,
+Integration tests use an intentionally self-consistent synthetic receipt fixture
+with the exact QM2 v1 shape; this is a **shape/arithmetic** fixture, not a genuine
+SHA-256d measurement. Negative tests tamper with controls, measured trials,
 reference hit counts, distributions, and provenance.
 
-The NBG source is imported via a read-only *test-only* cross-repository
-fixture under the AQLEN test suite, not a runtime dependency.
+No NBG source checkout or dependency is required for runtime or CI.
