@@ -33,7 +33,7 @@ export function convertNbgQm1Graph(graph){
               row.energy==='NOT_MEASURED'&&
               (row.hashesPerSecond===null||
                 typeof row.hashesPerSecond==='number'&&
-                Number.isFinite(row.hashesPerSecond)&&row.hashesPerSecond>=0)))
+                Number.isFinite(row.hashesPerSecond)&&row.hashesPerSecond>=0))))
           throw new Error('Invalid equal-strategy software measurement summary')
       }
       if(node.status==='SOFTWARE_MEASUREMENT'&&
