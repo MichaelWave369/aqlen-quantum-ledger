@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import sample from "../../dashboard/receipt_graph_dashboard_demo.json";
 import { GROUPS, LABELS, connections, layoutNodes, validatePayload } from "./graph.js";
 import { isNbgQm1Graph, convertNbgQm1Graph } from "./qm1Bridge.js";
+import { isNbgQm2Receipt, convertNbgQm2Receipt } from "./qm2Bridge.js";
 
 const REPO = "https://github.com/MichaelWave369/aqlen-quantum-ledger";
 const COLORS = { evidence:"#77ece3",device:"#89bdff",error:"#ffbd8b",calibration:"#c8a8ff",score:"#c8eb90",architecture:"#f2d089" };
@@ -77,15 +78,19 @@ export default function App() {
     try {
       if(file.size>2_000_000)throw Error("Select a file under 2 MB.");
       const imported=JSON.parse(await file.text());
-      const qm1=isNbgQm1Graph(imported);
-      const value=qm1?convertNbgQm1Graph(imported):imported;
+      const qm2=isNbgQm2Receipt(imported);
+      const qm1=!qm2&&isNbgQm1Graph(imported);
+      const value=qm2?convertNbgQm2Receipt(imported):
+        qm1?convertNbgQm1Graph(imported):imported;
       const errors=validatePayload(value);
       if(errors.length)throw Error(errors.join(" "));
       setPayload(value);setSelected(value.nodes.some(n=>n.id===value.focus_trace?.focus_id)?value.focus_trace.focus_id:value.nodes[0]?.id);
       setFilter("all");setSearch("");setLabel("LOCAL / "+file.name);
-      setNotice(qm1
-        ?"NBG-QM1 simulated evidence graph opened locally. NOT quantum-hardware verification, not uploaded, and not promoted to any AQLEN ledger."
-        :"Opened in this browser session only. Not uploaded and not scientifically verified.");
+      setNotice(qm2
+        ?"NBG-QM2 self-reported software benchmark opened locally. Arithmetic consistency checked; SHA-256 work NOT independently verified, no quantum hardware, no upload, and no promotion."
+        :qm1
+          ?"NBG-QM1 simulated evidence graph opened locally. NOT quantum-hardware verification, not uploaded, and not promoted to any AQLEN ledger."
+          :"Opened in this browser session only. Not uploaded and not scientifically verified.");
     } catch(e){setNotice("Import rejected: "+e.message)}
     finally {event.target.value=""}
   }
@@ -144,6 +149,15 @@ export default function App() {
                 const node=payload.nodes.find(n=>n.id===target);
                 return <button key={edge.id} onClick={()=>setSelected(target)}><small>{edge.source===current.id?"OUTBOUND":"INBOUND"} · {edge.label}</small><strong>{node?.label||target} ↗</strong></button>
               }):<p>No connected receipts in this payload.</p>}</div>
+              {current.qm2_detail&&<section className="qm2-import-detail" aria-label="QM2 reported software evidence">
+                <h4>QM2 reported measurements</h4>
+                <p>This is a user-imported report. Its arithmetic was checked, not independently reproduced.</p>
+                <dl>{Object.entries(current.qm2_detail).map(([name,value])=>
+                  <div key={name}><dt>{name.replace(/([A-Z])/g," $1").replaceAll("_"," ").toUpperCase()}</dt>
+                    <dd>{Array.isArray(value)?value.join(" / "):
+                      typeof value==="number"?value.toLocaleString(undefined,{maximumFractionDigits:4}):
+                        String(value)}</dd></div>)}</dl>
+              </section>}
               {(current.claim_boundary||(current.warnings||[]).length>0)&&<div className="warning"><strong>Claim boundary</strong><p>{current.claim_boundary||current.warnings[0]}</p></div>}
             </>:<p>No graph nodes to inspect.</p>}
           </aside>
